@@ -70,8 +70,8 @@ public class Game {
             System.out.println(winner.getName() + " has won this round!");
             players.print();
         }
-        Player game_Winner = players.getGameWinner();
-        System.out.println(game_Winner + " has won the game and the heart of the princess!");
+        Player gameWinner = players.getGameWinner();
+        System.out.println(gameWinner + " has won the game and the heart of the princess!");
 
     }
 
@@ -134,8 +134,8 @@ public class Game {
         user.getHand().print();
         System.out.println();
         System.out.print("Which card would you like to play (0 for first, 1 for second): ");
-        String CARD_POSITION = in.nextLine();
-        int idx = Integer.parseInt(CARD_POSITION);
+        String cardPosition = in.nextLine();
+        int idx = Integer.parseInt(cardPosition);
         return user.getHand().remove(idx);
     }
 
