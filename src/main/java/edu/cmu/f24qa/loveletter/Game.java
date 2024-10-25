@@ -45,7 +45,9 @@ public class Game {
                     turn.getHand().add(deck.draw());
 
                     int royaltyPos = turn.getHand().royaltyPos();
-                    if (royaltyPos != -1) {
+                    if (royaltyPos == -1) {
+                        playCard(getCard(turn), turn);
+                    } else {
                         if (royaltyPos == 0 && turn.getHand().peek(1).value() == 7) {
                             playCard(turn.getHand().remove(1), turn);
                         } else if (royaltyPos == 1 && turn.getHand().peek(0).value() == 7) {
@@ -53,8 +55,6 @@ public class Game {
                         } else {
                             playCard(getCard(turn), turn);
                         }
-                    } else {
-                        playCard(getCard(turn), turn);
                     }
                 }
             }
