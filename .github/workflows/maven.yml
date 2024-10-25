@@ -20,3 +20,5 @@ jobs:
         cache: maven
     - name: Run the Maven tests
       run: mvn clean compile test
+    - name: Run PMD checks
+      run: mvn pmd:check
