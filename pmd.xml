@@ -14,9 +14,7 @@
   <!-- Best Practices -->
   <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters" />
   <rule ref="category/java/bestpractices.xml/AvoidStringBufferField" />
-  <rule ref="category/java/bestpractices.xml/GuardLogStatement" />
   <!-- Code Style -->
-  <rule ref="category/java/codestyle.xml/AvoidUsingNativeCode" />
   <rule ref="category/java/codestyle.xml/ClassNamingConventions" />
   <rule ref="category/java/codestyle.xml/ConfusingTernary" />
   <rule ref="category/java/codestyle.xml/EmptyMethodInAbstractClassShouldBeAbstract" />
@@ -42,17 +40,12 @@
   <rule ref="category/java/errorprone.xml/CompareObjectsWithEquals" />
   <rule ref="category/java/errorprone.xml/ComparisonWithNaN" />
   <rule ref="category/java/errorprone.xml/ConstructorCallsOverridableMethod" />
-  <rule ref="category/java/errorprone.xml/DoNotCallGarbageCollectionExplicitly" />
   <rule ref="category/java/errorprone.xml/EmptyCatchBlock" />
   <rule ref="category/java/errorprone.xml/EqualsNull" />
-  <rule ref="category/java/errorprone.xml/MoreThanOneLogger" />
   <rule ref="category/java/errorprone.xml/NullAssignment" />
   <rule ref="category/java/errorprone.xml/ProperCloneImplementation" />
   <rule ref="category/java/errorprone.xml/ReturnEmptyCollectionRatherThanNull" />
-  <rule ref="category/java/errorprone.xml/SingleMethodSingleton" />
-  <rule ref="category/java/errorprone.xml/SingletonClassReturningNewInstance" />
   <rule ref="category/java/errorprone.xml/SuspiciousEqualsMethodName" />
   <!-- Performance -->
-  <rule ref="category/java/performance.xml/AvoidFileStream" />
   <rule ref="category/java/performance.xml/StringInstantiation" />
 </ruleset>
