@@ -14,11 +14,11 @@ public class DiscardPile {
     }
 
     public int value() {
-        int RET = 0;
+        int ret = 0;
         for (Card c : this.cards) {
-            RET = c.value();
+            ret = c.value();
         }
-        return RET;
+        return ret;
     }
 
     public void clear() {

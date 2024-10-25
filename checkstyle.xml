@@ -5,4 +5,87 @@
 
 <!-- you should create your own checkstyle configuration here -->
 <module name="Checker">
+
+    <!-- Restricts line length to a reasonable maximum to avoid horizontal scrolling. -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+    </module>
+
+    <module name="TreeWalker">
+
+    <!-- 1. Whitespace -->
+        <!-- Checks that there is whitespace around operators (+, -, *, etc...) -->
+        <module name="WhitespaceAround">
+            <property name="tokens" value="ASSIGN, PLUS, MINUS, DIV, STAR, MOD, EQUAL, NOT_EQUAL, LT, GT, LE, GE, LAND, LOR, BAND, BOR, BXOR, SL, SR, BSR"/>
+        </module>
+
+        <!-- Checks for exactly one line between code sections -->
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLines" value="false"/>
+        </module>
+
+        <!-- Checks that there is whitespace after certain tokens, like commas and semicolons -->
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI, LITERAL_IF, LITERAL_FOR, LITERAL_WHILE"/>
+        </module>
+
+    <!-- 2. Naming conventions -->
+        <!-- Checks that class and interface names are in PascalCase -->
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Checks that method names are in camelCase -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Checks that parameter names are in camelCase -->
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Checks that local variable names are in camelCase -->
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Checks that constraint names are written in UPPER_CASE with underscores separating words  -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9_]*$"/>
+        </module>
+
+        <!-- Checks that package names are lowercase with dot-separated words-->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+
+    <!-- Others -->
+        <!-- Prevent assignments inside expressions (e.g., within if or while conditions) -->
+        <module name="InnerAssignment"/>
+
+        <!-- Avoid overly nested blocks -->
+        <module name="AvoidNestedBlocks"/>
+
+        <!-- Limit the depth of nested if statements, usually to a maximum of 2 levels -->
+        <module name="NestedIfDepth">
+            <property name="max" value="2"/> 
+        </module>
+
+        <!-- Limit the depth of nested try statements, default max allowed depth is 1 -->
+        <module name="NestedTryDepth"/>
+
+        <!-- Check for unused imports for cleaner code -->
+        <module name="UnusedImports"/>
+
+        <!-- Check for redundant imports to avoid multiple imports of the same class -->
+        <module name="RedundantImport"/>
+
+        <!-- Check if local variable has the same name as a class field -->
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true"/> <!-- Optionally ignore constructor parameters -->
+        </module>
+
+    </module>
 </module>

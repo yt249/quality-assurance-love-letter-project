@@ -20,3 +20,6 @@ jobs:
         cache: maven
     - name: Run the Maven tests
       run: mvn clean compile test
+
+    - name: Run checkstyle (Christy Tseng)
+      run: mvn checkstyle:check
