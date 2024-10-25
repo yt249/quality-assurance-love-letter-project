@@ -18,7 +18,7 @@ public class Game {
     public void setPlayers() {
         System.out.print("Enter player name (empty when done): ");
         String name = in.nextLine();
-        while (name != "") {
+        while (name.equals("")) {
             this.players.addPlayer(name);
             System.out.print("Enter player name (empty when done): ");
             name = in.nextLine();
@@ -94,20 +94,20 @@ public class Game {
         user.getDiscarded().add(card);
 
         if (value < 4 || value == 5 || value == 6) {
-            if (name == "guard") {
+            if (name.equals("guard")) {
                 Player opponent = getOpponent(in, players, user);
                 useGuard(in, opponent);
-            } else if (name == "preist") {
+            } else if (name.equals("preist")) {
                 Player opponent = getOpponent(in, players, user);
                 Card opponentCard = opponent.getHand().peek(0);
                 System.out.println(opponent.getName() + " shows you a " + opponentCard);
-            } else if (name == "baron") {
+            } else if (name.equals("baron")) {
                 Player opponent = getOpponent(in, players, user);
                 useBaron(user, opponent);
-            } else if (name == "prince") {
+            } else if (name.equals("prince")) {
                 Player opponent = getOpponent(in, players, user);
                 opponent.eliminate();
-            } else if (name == "king") {
+            } else if (name.equals("king")) {
                 Player opponent = getOpponent(in, players, user);
                 useKing(opponent, user);
             }
