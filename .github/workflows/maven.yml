@@ -27,7 +27,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: checkstyle-report
-        path: target/site/checkstyle.html
+        path: target/checkstyle.html
     - name: Run PMD checks
       run: mvn pmd:check
     - name: Upload PMD Report
