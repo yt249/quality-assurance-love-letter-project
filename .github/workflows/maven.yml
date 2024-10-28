@@ -22,6 +22,12 @@ jobs:
       run: mvn clean compile test
     - name: Run checkstyle (Christy Tseng)
       run: mvn checkstyle:check
+    - name: Upload Checkstyle Report
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: checkstyle-report
+        path: target/site/checkstyle.html
     - name: Run PMD checks
       run: mvn pmd:check
     - name: Upload PMD Report
