@@ -20,6 +20,13 @@ jobs:
         cache: maven
     - name: Run the Maven tests
       run: mvn clean compile test
-
     - name: Run checkstyle (Christy Tseng)
       run: mvn checkstyle:check
+    - name: Run PMD checks
+      run: mvn pmd:check
+    - name: Upload PMD Report
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: pmd-report
+        path: target/pmd.xml

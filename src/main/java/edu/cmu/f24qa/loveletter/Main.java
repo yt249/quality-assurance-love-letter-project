@@ -10,5 +10,4 @@ public class Main {
         g.setPlayers();
         g.start();
     }
-
 }
