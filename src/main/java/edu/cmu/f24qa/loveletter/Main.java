@@ -9,6 +9,5 @@ public class Main {
         Game g = new Game(in);
         g.setPlayers();
         g.start();
-        // it's a very loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong line
     }
 }
