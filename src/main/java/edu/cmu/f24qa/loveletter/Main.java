@@ -10,5 +10,10 @@ public class Main {
         g.setPlayers();
         g.start();
     }
-
+   // Example method to demonstrate a rule violation
+   public void exampleMethod(String param) {
+        // Violation: Reassigning the method parameter
+        param = "New Value"; // This line violates the AvoidReassigningParameters rule
+        System.out.println(param);
+    } 
 }
