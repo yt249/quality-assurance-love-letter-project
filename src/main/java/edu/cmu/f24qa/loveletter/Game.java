@@ -18,7 +18,7 @@ public class Game {
     public void setPlayers() {
         System.out.print("Enter player name (empty when done): ");
         String name = in.nextLine();
-        while (name != "") {
+        while (name.equals("")) {
             this.players.addPlayer(name);
             System.out.print("Enter player name (empty when done): ");
             name = in.nextLine();
@@ -45,7 +45,9 @@ public class Game {
                     turn.getHand().add(deck.draw());
 
                     int royaltyPos = turn.getHand().royaltyPos();
-                    if (royaltyPos != -1) {
+                    if (royaltyPos == -1) {
+                        playCard(getCard(turn), turn);
+                    } else {
                         if (royaltyPos == 0 && turn.getHand().peek(1).value() == 7) {
                             playCard(turn.getHand().remove(1), turn);
                         } else if (royaltyPos == 1 && turn.getHand().peek(0).value() == 7) {
@@ -53,8 +55,6 @@ public class Game {
                         } else {
                             playCard(getCard(turn), turn);
                         }
-                    } else {
-                        playCard(getCard(turn), turn);
                     }
                 }
             }
@@ -70,8 +70,8 @@ public class Game {
             System.out.println(winner.getName() + " has won this round!");
             players.print();
         }
-        Player game_Winner = players.getGameWinner();
-        System.out.println(game_Winner + " has won the game and the heart of the princess!");
+        Player gameWinner = players.getGameWinner();
+        System.out.println(gameWinner + " has won the game and the heart of the princess!");
 
     }
 
@@ -94,20 +94,20 @@ public class Game {
         user.getDiscarded().add(card);
 
         if (value < 4 || value == 5 || value == 6) {
-            if (name == "guard") {
+            if (name.equals("guard")) {
                 Player opponent = getOpponent(in, players, user);
                 useGuard(in, opponent);
-            } else if (name == "preist") {
+            } else if (name.equals("preist")) {
                 Player opponent = getOpponent(in, players, user);
                 Card opponentCard = opponent.getHand().peek(0);
                 System.out.println(opponent.getName() + " shows you a " + opponentCard);
-            } else if (name == "baron") {
+            } else if (name.equals("baron")) {
                 Player opponent = getOpponent(in, players, user);
                 useBaron(user, opponent);
-            } else if (name == "prince") {
+            } else if (name.equals("prince")) {
                 Player opponent = getOpponent(in, players, user);
                 opponent.eliminate();
-            } else if (name == "king") {
+            } else if (name.equals("king")) {
                 Player opponent = getOpponent(in, players, user);
                 useKing(opponent, user);
             }
@@ -134,8 +134,8 @@ public class Game {
         user.getHand().print();
         System.out.println();
         System.out.print("Which card would you like to play (0 for first, 1 for second): ");
-        String CARD_POSITION = in.nextLine();
-        int idx = Integer.parseInt(CARD_POSITION);
+        String cardPosition = in.nextLine();
+        int idx = Integer.parseInt(cardPosition);
         return user.getHand().remove(idx);
     }
 
