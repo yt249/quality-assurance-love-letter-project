@@ -20,6 +20,14 @@ jobs:
         cache: maven
     - name: Run the Maven tests
       run: mvn clean compile test
+    - name: Run checkstyle
+      run: mvn checkstyle:check
+    - name: Upload Checkstyle Report
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: checkstyle-report
+        path: target/checkstyle-result.xml
     - name: Run PMD checks
       run: mvn pmd:check
     - name: Upload PMD Report
@@ -28,4 +36,3 @@ jobs:
       with:
         name: pmd-report
         path: target/pmd.xml
-    

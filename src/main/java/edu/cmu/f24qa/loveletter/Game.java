@@ -84,9 +84,9 @@ public class Game {
      * Plays a card from the user's hand.
      *
      * @param card
-     *          the played card
+     *             the played card
      * @param user
-     *          the player of the card
+     *             the player of the card
      */
     private void playCard(Card card, Player user) {
         String name = card.name;
@@ -126,7 +126,7 @@ public class Game {
      * Allows for the user to pick a card from their hand to play.
      *
      * @param user
-     *      the current player
+     *             the current player
      *
      * @return the chosen card
      */
@@ -140,17 +140,20 @@ public class Game {
     }
 
     /**
-     * Allows the user to guess a card that a player's hand contains (excluding another guard).
-     * If the user is correct, the opponent loses the round and must lay down their card.
+     * Allows the user to guess a card that a player's hand contains (excluding
+     * another guard).
+     * If the user is correct, the opponent loses the round and must lay down their
+     * card.
      * If the user is incorrect, the opponent is not affected.
+     * 
      * @param in
-     *          the input stream
+     *                 the input stream
      * @param opponent
-     *          the targeted player
+     *                 the targeted player
      */
-    private void useGuard(Scanner in, Player opponent) {
+    private void useGuard(Scanner useGuardIn, Player opponent) {
         System.out.print("Which card would you like to guess: ");
-        String cardName = in.nextLine();
+        String cardName = useGuardIn.nextLine();
 
         Card opponentCard = opponent.getHand().peek(0);
         if (opponentCard.getName().equals(cardName)) {
@@ -164,16 +167,20 @@ public class Game {
 
     /**
      * Allows the user to compare cards with an opponent.
-     * If the user's card is of higher value, the opposing player loses the round and their card.
-     * If the user's card is of lower value, the user loses the round and their card.
-     * If the two players have the same card, their used pile values are compared in the same manner.
+     * If the user's card is of higher value, the opposing player loses the round
+     * and their card.
+     * If the user's card is of lower value, the user loses the round and their
+     * card.
+     * If the two players have the same card, their used pile values are compared in
+     * the same manner.
+     * 
      * @param user
-     *          the initiator of the comparison
+     *                 the initiator of the comparison
      * @param opponent
-     *          the targeted player
+     *                 the targeted player
      */
     private void useBaron(
-        Player user, Player opponent) {
+            Player user, Player opponent) {
         Card userCard = user.getHand().peek(0);
         Card opponentCard = opponent.getHand().peek(0);
 
@@ -199,10 +206,11 @@ public class Game {
     /**
      * Allows the user to switch cards with an opponent.
      * Swaps the user's hand for the opponent's.
+     * 
      * @param user
-     *          the initiator of the swap
+     *                 the initiator of the swap
      * @param opponent
-     *          the targeted player
+     *                 the targeted player
      */
     private void useKing(Player user, Player opponent) {
         Card userCard = user.getHand().remove(0);
@@ -213,19 +221,19 @@ public class Game {
 
     /**
      * Useful method for obtaining a chosen target from the player list.
+     * 
      * @param in
-     *          the input stream
+     *                   the input stream
      * @param playerList
-     *          the list of players
+     *                   the list of players
      * @param user
-     *          the player choosing an opponent
+     *                   the player choosing an opponent
      * @return the chosen target player
      */
-    private Player getOpponent(Scanner in, PlayerList playerList, Player user) {
+    private Player getOpponent(Scanner getOpponentIn, PlayerList playerList, Player user) {
         System.out.print("Who would you like to target: ");
-        String opponentName = in.nextLine();
+        String opponentName = getOpponentIn.nextLine();
         return playerList.getPlayer(opponentName);
     }
-
 
 }
