@@ -20,7 +20,7 @@ public class Game {
     public void setPlayers() {
         System.out.print("Enter player name (empty when done): ");
         String name = in.nextLine();
-        while (name.equals("")) {
+        while (!name.equals("")) {
             this.players.addPlayer(name);
             System.out.print("Enter player name (empty when done): ");
             name = in.nextLine();
@@ -148,7 +148,7 @@ public class Game {
      * If the user is correct, the opponent loses the round and must lay down their
      * card.
      * If the user is incorrect, the opponent is not affected.
-     * 
+     *
      * @param in
      *                 the input stream
      * @param opponent
@@ -176,7 +176,7 @@ public class Game {
      * card.
      * If the two players have the same card, their used pile values are compared in
      * the same manner.
-     * 
+     *
      * @param user
      *                 the initiator of the comparison
      * @param opponent
@@ -209,7 +209,7 @@ public class Game {
     /**
      * Allows the user to switch cards with an opponent.
      * Swaps the user's hand for the opponent's.
-     * 
+     *
      * @param user
      *                 the initiator of the swap
      * @param opponent
@@ -224,7 +224,7 @@ public class Game {
 
     /**
      * Useful method for obtaining a chosen target from the player list.
-     * 
+     *
      * @param in
      *                   the input stream
      * @param playerList
