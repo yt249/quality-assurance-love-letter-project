@@ -25,6 +25,12 @@ public class Hand {
         this.hand.add(card);
     }
 
+    public Hand copy() {
+        Hand copy = new Hand();
+        copy.hand.addAll(this.hand);  // Copy all cards to the new Hand instance
+        return copy;
+    }
+
     /**
      * Removes the card at the given index from the hand.
      *

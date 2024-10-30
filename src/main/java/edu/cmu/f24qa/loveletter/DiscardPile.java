@@ -30,4 +30,10 @@ public class DiscardPile {
             System.out.println(c);
         }
     }
+
+    public DiscardPile copy() {
+        DiscardPile copy = new DiscardPile();
+        copy.cards.addAll(this.cards);  // Copy the cards to the new instance
+        return copy;
+    }
 }

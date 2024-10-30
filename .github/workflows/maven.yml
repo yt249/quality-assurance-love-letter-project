@@ -36,3 +36,5 @@ jobs:
       with:
         name: pmd-report
         path: target/pmd.xml
+    - name: Run spotbugs
+      run:  mvn spotbugs:check

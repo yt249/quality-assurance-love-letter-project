@@ -10,8 +10,8 @@ public enum Card {
     COUNTESS("Countes", 7),
     PRINCESS("Princess", 8);
 
-    public String name;
-    public int value;
+    private String name;
+    private int value;
 
     /**
      * All possible card names.

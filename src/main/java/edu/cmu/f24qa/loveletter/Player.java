@@ -43,11 +43,11 @@ public class Player {
     }
 
     public Hand getHand() {
-        return this.hand;
+        return this.hand.copy();
     }
 
     public DiscardPile getDiscarded() {
-        return this.discarded;
+        return this.discarded.copy();
     }
 
     /**

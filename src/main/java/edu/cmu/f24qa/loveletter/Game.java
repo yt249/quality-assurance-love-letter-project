@@ -1,19 +1,23 @@
 package edu.cmu.f24qa.loveletter;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class Game {
     private PlayerList players;
     private Deck deck;
     private Scanner in;
+
+    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "For future game logic.")
     int round;
 
-    public Game(Scanner in) {
+    public Game(InputStream inputStream) {
         this.players = new PlayerList();
         this.deck = new Deck();
-        this.in = in;
+        this.in = new Scanner(inputStream, StandardCharsets.UTF_8);  // Initialize Scanner here to control its lifecycle
         this.round = 0;
     }
 
@@ -94,7 +98,7 @@ public class Game {
      *             the player of the card
      */
     private void playCard(Card card, Player user) {
-        String name = card.name;
+        String name = card.getName();
         int value = card.value();
         user.getDiscarded().add(card);
 
