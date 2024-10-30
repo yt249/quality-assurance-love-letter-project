@@ -2,6 +2,8 @@ package edu.cmu.f24qa.loveletter;
 
 import java.util.Scanner;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 public class Game {
     private PlayerList players;
     private Deck deck;
@@ -66,9 +68,12 @@ public class Game {
                 winner = players.compareUsedPiles();
                 winner.addToken();
             }
-            winner.addToken();
-            System.out.println(winner.getName() + " has won this round!");
-            players.print();
+
+            if (winner != null) {
+                winner.addToken();
+                System.out.println(winner.getName() + " has won this round!");
+                players.print();
+            }
         }
         Player gameWinner = players.getGameWinner();
         System.out.println(gameWinner + " has won the game and the heart of the princess!");
@@ -94,21 +99,19 @@ public class Game {
         user.getDiscarded().add(card);
 
         if (value < 4 || value == 5 || value == 6) {
-            if (name.equals("guard")) {
-                Player opponent = getOpponent(in, players, user);
+            Player opponent = getOpponent(in, players, user);
+            if (opponent == null) {
+                System.out.println("No such player found");
+            } else if (name.equals("guard")) {
                 useGuard(in, opponent);
             } else if (name.equals("preist")) {
-                Player opponent = getOpponent(in, players, user);
                 Card opponentCard = opponent.getHand().peek(0);
                 System.out.println(opponent.getName() + " shows you a " + opponentCard);
             } else if (name.equals("baron")) {
-                Player opponent = getOpponent(in, players, user);
                 useBaron(user, opponent);
             } else if (name.equals("prince")) {
-                Player opponent = getOpponent(in, players, user);
                 opponent.eliminate();
             } else if (name.equals("king")) {
-                Player opponent = getOpponent(in, players, user);
                 useKing(opponent, user);
             }
         } else {
@@ -230,10 +233,15 @@ public class Game {
      *                   the player choosing an opponent
      * @return the chosen target player
      */
-    private Player getOpponent(Scanner getOpponentIn, PlayerList playerList, Player user) {
+    private @Nullable Player getOpponent(Scanner getOpponentIn, PlayerList playerList, Player user) {
         System.out.print("Who would you like to target: ");
         String opponentName = getOpponentIn.nextLine();
-        return playerList.getPlayer(opponentName);
+        Player opponent = playerList.getPlayer(opponentName);
+        if (opponent == null) {
+            System.out.println("No such player found");
+            return null;
+        }
+        return opponent;
     }
 
 }

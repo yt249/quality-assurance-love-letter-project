@@ -86,11 +86,9 @@
           <!-- enable checkers from the checker framework here -->
           <!-- the nullness checker can be enabled by uncommenting the section below -->
           <!-- remember that you will need to add annotations to your code to use the checker framework -->
-          <!--
           <annotationProcessors>
             <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
           </annotationProcessors>
-          -->
           <compilerArgs combine.children="append">
             <arg>-Xmaxerrs</arg>
             <arg>10000</arg>

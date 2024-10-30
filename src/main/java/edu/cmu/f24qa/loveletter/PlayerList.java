@@ -1,6 +1,8 @@
 package edu.cmu.f24qa.loveletter;
 
 import java.util.LinkedList;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class PlayerList {
 
@@ -90,7 +92,7 @@ public class PlayerList {
      *
      * @return the round winner
      */
-    public Player getRoundWinner() {
+    public @Nullable Player getRoundWinner() {
         for (Player p : players) {
             if (p.getHand().hasCards()) {
                 return p;
@@ -104,7 +106,7 @@ public class PlayerList {
      *
      * @return the game winner
      */
-    public Player getGameWinner() {
+    public @Nullable Player getGameWinner() {
         for (Player p : players) {
             if (p.getTokens() == 5) {
                 return p;
@@ -133,7 +135,10 @@ public class PlayerList {
      *
      * @return the player with the given name or null if there is no such player
      */
-    public Player getPlayer(String name) {
+    public @Nullable Player getPlayer(String name) {
+        if (players.isEmpty()) {
+            throw new IllegalStateException("Player list is empty");
+        }
         for (Player p : players) {
             if (p.getName().equalsIgnoreCase(name)) {
                 return p;
@@ -147,7 +152,10 @@ public class PlayerList {
      *
      * @return the player with the highest used pile value
      */
-    public Player compareUsedPiles() {
+    public @NonNull Player compareUsedPiles() {
+        if (players.isEmpty()) {
+            throw new IllegalStateException("Player list is empty");
+        }
         Player winner = players.getFirst();
         for (Player p : players) {
             if (p.getDiscarded().value() > winner.getDiscarded().value()) {
