@@ -51,7 +51,7 @@
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
         </module>
 
-        <!-- Checks that constraint names are written in UPPER_CASE with underscores separating words  -->
+        <!-- Checks that constant names are written in UPPER_CASE with underscores separating words  -->
         <module name="ConstantName">
             <property name="format" value="^[A-Z][A-Z0-9_]*$"/>
         </module>
