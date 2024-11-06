@@ -46,4 +46,15 @@ public class Deck {
     public boolean hasMoreCards() {
         return deck.size() > 0;
     }
+
+    /**
+     * Getter for the deck of cards.
+     *
+     * @return the deck as a Stack of Card objects.
+     */
+    public Stack<Card> getDeck() {
+        Stack<Card> deckCopy = new Stack<>();
+        deckCopy.addAll(this.deck); // Create a copy of the stack to avoid exposing internal representation
+        return deckCopy;
+    }
 }

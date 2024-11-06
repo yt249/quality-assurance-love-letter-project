@@ -22,10 +22,10 @@ public class PlayerList {
     /**
      * Adds a new Player object with the given name to the PlayerList.
      *
-     * @param name
-     *          the given player name
+     * @param name - the given player name
      *
-     * @return true if the player is not already in the list and can be added, false if not
+     * @return true if the player is not already in the list and can be added, false
+     *         if not
      */
     public boolean addPlayer(String name) {
         for (Player p : players) {
@@ -125,8 +125,7 @@ public class PlayerList {
     /**
      * Deals a card to each Player in the list.
      *
-     * @param deck
-     *          the deck of cards
+     * @param deck - the deck of cards
      */
     public void dealCards(Deck deck) {
         for (Player p : players) {
@@ -137,8 +136,7 @@ public class PlayerList {
     /**
      * Gets the player with the given name.
      *
-     * @param name
-     *          the name of the desired player
+     * @param name - the name of the desired player
      *
      * @return the player with the given name or null if there is no such player
      */
@@ -152,6 +150,15 @@ public class PlayerList {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the full list of players.
+     *
+     * @return the LinkedList of Player objects.
+     */
+    public LinkedList<Player> getPlayers() {
+        return new LinkedList<>(players); // Defensive copy
     }
 
     /**
@@ -171,5 +178,4 @@ public class PlayerList {
         }
         return winner;
     }
-
 }

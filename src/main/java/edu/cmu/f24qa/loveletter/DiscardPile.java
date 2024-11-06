@@ -23,7 +23,7 @@ public class DiscardPile {
     public int value() {
         int ret = 0;
         for (Card c : this.cards) {
-            ret = c.value();
+            ret = c.getValue();
         }
         return ret;
     }
@@ -40,7 +40,17 @@ public class DiscardPile {
 
     public DiscardPile copy() {
         DiscardPile copy = new DiscardPile();
-        copy.cards.addAll(this.cards);  // Copy the cards to the new instance
+        copy.cards.addAll(this.cards); // Copy the cards to the new instance
         return copy;
     }
+
+    /**
+     * Getter for the cards in the discard pile.
+     *
+     * @return a copy of the cards in the discard pile.
+     */
+    public ArrayList<Card> getCards() {
+        return new ArrayList<>(this.cards); // Return a copy to avoid exposing internal representation
+    }
+
 }

@@ -1,12 +1,13 @@
 package edu.cmu.f24qa.loveletter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Hand {
     private ArrayList<Card> hand;
 
     public Hand() {
-        this.hand  = new ArrayList<>();
+        this.hand = new ArrayList<>();
     }
 
     /**
@@ -19,8 +20,7 @@ public class Hand {
     /**
      * Peeks the card held by the player.
      *
-     * @param idx
-     *          the index of the Card to peek
+     * @param idx - the index of the Card to peek
      *
      * @return the card held by the player
      */
@@ -34,15 +34,14 @@ public class Hand {
 
     public Hand copy() {
         Hand copy = new Hand();
-        copy.hand.addAll(this.hand);  // Copy all cards to the new Hand instance
+        copy.hand.addAll(this.hand); // Copy all cards to the new Hand instance
         return copy;
     }
 
     /**
      * Removes the card at the given index from the hand.
      *
-     * @param idx
-     *          the index of the card
+     * @param idx - the index of the card
      *
      * @return the card at the given index
      */
@@ -57,7 +56,7 @@ public class Hand {
      */
     public int royaltyPos() {
         for (int i = 0; i < hand.size(); i++) {
-            if (hand.get(i).value() == 5 || hand.get(i).value() == 6) {
+            if (hand.get(i).getValue() == 5 || hand.get(i).getValue() == 6) {
                 return i;
             }
         }
@@ -76,5 +75,16 @@ public class Hand {
         for (Card c : this.hand) {
             System.out.println(c);
         }
+    }
+
+    /**
+     * Returns a new list containing the cards in hand.
+     * Modifications to the returned list do not affect the internal state of this
+     * hand.
+     *
+     * @return a new list of cards in the hand.
+     */
+    public List<Card> getHand() {
+        return new ArrayList<>(this.hand);
     }
 }

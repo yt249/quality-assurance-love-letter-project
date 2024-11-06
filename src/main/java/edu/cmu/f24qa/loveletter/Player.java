@@ -55,7 +55,7 @@ public class Player {
      *
      * @return true, if the player is protected, false if not
      */
-    public boolean isProtected() {
+    public boolean getIsProtected() {
         return this.isProtected;
     }
 

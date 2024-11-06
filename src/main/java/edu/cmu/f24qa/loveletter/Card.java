@@ -30,20 +30,28 @@ public enum Card {
     /**
      * Constructor for a card object.
      *
-     * @param name
-     *          the name of the card
-     * @param value
-     *          the value of the card
+     * @param name - the name of the card
+     * @param value - the value of the card
      */
     Card(String name, int value) {
         this.name = name;
         this.value = value;
     }
 
-    public int value() {
+    /**
+     * Getter for the card's value.
+     *
+     * @return the value of the card.
+     */
+    public int getValue() {
         return this.value;
     }
 
+    /**
+     * Getter for the card's name.
+     *
+     * @return the name of the card.
+     */
     public String getName() {
         return this.name;
     }

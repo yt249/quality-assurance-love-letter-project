@@ -3,6 +3,7 @@ package edu.cmu.f24qa.loveletter;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -21,7 +22,7 @@ public class Game {
         this.round = 0;
     }
 
-    public void setPlayers() {
+    public void promptForPlayers() {
         System.out.print("Enter player name (empty when done): ");
         String name = in.nextLine();
         while (!name.equals("")) {
@@ -37,7 +38,7 @@ public class Game {
     public void start() {
         while (players.getGameWinner() == null) {
             players.reset();
-            setDeck();
+            initializeDeck();
             players.dealCards(deck);
             while (!players.checkForRoundWinner() && deck.hasMoreCards()) {
                 Player turn = players.getCurrentPlayer();
@@ -45,7 +46,7 @@ public class Game {
                 if (turn.getHand().hasCards()) {
                     players.printUsedPiles();
                     System.out.println("\n" + turn.getName() + "'s turn:");
-                    if (turn.isProtected()) {
+                    if (turn.getIsProtected()) {
                         turn.switchProtection();
                     }
                     turn.getHand().add(deck.draw());
@@ -54,9 +55,9 @@ public class Game {
                     if (royaltyPos == -1) {
                         playCard(getCard(turn), turn);
                     } else {
-                        if (royaltyPos == 0 && turn.getHand().peek(1).value() == 7) {
+                        if (royaltyPos == 0 && turn.getHand().peek(1).getValue() == 7) {
                             playCard(turn.getHand().remove(1), turn);
-                        } else if (royaltyPos == 1 && turn.getHand().peek(0).value() == 7) {
+                        } else if (royaltyPos == 1 && turn.getHand().peek(0).getValue() == 7) {
                             playCard(turn.getHand().remove(0), turn);
                         } else {
                             playCard(getCard(turn), turn);
@@ -84,7 +85,7 @@ public class Game {
 
     }
 
-    private void setDeck() {
+    private void initializeDeck() {
         this.deck.build();
         this.deck.shuffle();
     }
@@ -92,14 +93,12 @@ public class Game {
     /**
      * Plays a card from the user's hand.
      *
-     * @param card
-     *             the played card
-     * @param user
-     *             the player of the card
+     * @param card - the played card
+     * @param user - the player of the card
      */
     private void playCard(Card card, Player user) {
         String name = card.getName();
-        int value = card.value();
+        int value = card.getValue();
         user.getDiscarded().add(card);
 
         if (value < 4 || value == 5 || value == 6) {
@@ -132,8 +131,7 @@ public class Game {
     /**
      * Allows for the user to pick a card from their hand to play.
      *
-     * @param user
-     *             the current player
+     * @param user - the current player
      *
      * @return the chosen card
      */
@@ -153,10 +151,8 @@ public class Game {
      * card.
      * If the user is incorrect, the opponent is not affected.
      *
-     * @param in
-     *                 the input stream
-     * @param opponent
-     *                 the targeted player
+     * @param in - the input stream
+     * @param opponent - the targeted player
      */
     private void useGuard(Scanner useGuardIn, Player opponent) {
         System.out.print("Which card would you like to guess: ");
@@ -181,17 +177,15 @@ public class Game {
      * If the two players have the same card, their used pile values are compared in
      * the same manner.
      *
-     * @param user
-     *                 the initiator of the comparison
-     * @param opponent
-     *                 the targeted player
+     * @param user - the initiator of the comparison
+     * @param opponent - the targeted player
      */
     private void useBaron(
             Player user, Player opponent) {
         Card userCard = user.getHand().peek(0);
         Card opponentCard = opponent.getHand().peek(0);
 
-        int cardComparison = Integer.compare(userCard.value(), opponentCard.value());
+        int cardComparison = Integer.compare(userCard.getValue(), opponentCard.getValue());
         if (cardComparison > 0) {
             System.out.println("You have won the comparison!");
             opponent.eliminate();
@@ -214,10 +208,8 @@ public class Game {
      * Allows the user to switch cards with an opponent.
      * Swaps the user's hand for the opponent's.
      *
-     * @param user
-     *                 the initiator of the swap
-     * @param opponent
-     *                 the targeted player
+     * @param user - the initiator of the swap
+     * @param opponent - the targeted player
      */
     private void useKing(Player user, Player opponent) {
         Card userCard = user.getHand().remove(0);
@@ -229,12 +221,9 @@ public class Game {
     /**
      * Useful method for obtaining a chosen target from the player list.
      *
-     * @param in
-     *                   the input stream
-     * @param playerList
-     *                   the list of players
-     * @param user
-     *                   the player choosing an opponent
+     * @param in - the input stream
+     * @param playerList - the list of players
+     * @param user - the player choosing an opponent
      * @return the chosen target player
      */
     private @Nullable Player getOpponent(Scanner getOpponentIn, PlayerList playerList, Player user) {
@@ -246,6 +235,34 @@ public class Game {
             return null;
         }
         return opponent;
+    }
+
+    /**
+     * Gets a copy of the players list.
+     *
+     * @return a copy of the PlayerList object to avoid exposing internal
+     *         representation.
+     */
+    public PlayerList getPlayers() {
+        return new PlayerList(this.players);
+    }
+
+    /**
+     * Gets a copy of the deck to avoid exposing internal representation.
+     *
+     * @return a copy of the current Deck instance.
+     */
+    public Deck getDeck() {
+        return new Deck(this.deck);
+    }
+
+    /**
+     * Gets the current round number.
+     *
+     * @return the round number.
+     */
+    public int getRound() {
+        return round;
     }
 
 }
