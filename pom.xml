@@ -114,10 +114,7 @@
         <artifactId>spotbugs-maven-plugin</artifactId>
         <version>4.8.1.0</version>
         <configuration>
-          <visitors>
-          <!-- Add Visitors here to add extra verification -->
-
-          </visitors>
+          <visitors></visitors>
         </configuration>
       </plugin>
 

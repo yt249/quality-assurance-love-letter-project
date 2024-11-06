@@ -24,6 +24,15 @@ public class Player {
         this.tokens = tokens;
     }
 
+    public Player(Player player) {
+        this.name = player.name;
+        this.hand = new Hand(player.hand);
+        this.discarded = new DiscardPile(player.discarded);
+        this.isProtected = player.getIsProtected();
+        this.tokens = player.tokens;
+
+    }
+
     public void addToken() {
         this.tokens++;
     }
