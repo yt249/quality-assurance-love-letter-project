@@ -10,6 +10,14 @@ public class Deck {
         this.deck = new Stack<>();
     }
 
+    /*
+     * Copy Constructor
+     */
+    public Deck(Deck deck) {
+        this.deck = new Stack<>();
+        this.deck.addAll(deck.deck);
+    }
+    
     public void build() {
         for (int i = 0; i < 5; i++) {
             deck.push(Card.GUARD);

@@ -13,6 +13,13 @@ public class PlayerList {
     }
 
     /**
+     * Copy constructor
+     */
+    public PlayerList(PlayerList playerList) {
+        this.players = new LinkedList<>(playerList.players);
+    }
+
+    /**
      * Adds a new Player object with the given name to the PlayerList.
      *
      * @param name
@@ -26,7 +33,7 @@ public class PlayerList {
                 return false;
             }
         }
-        players.addLast(new Player(name));
+        players.addLast(new Player(name, new Hand(), new DiscardPile(), false, 0));
         return true;
     }
 

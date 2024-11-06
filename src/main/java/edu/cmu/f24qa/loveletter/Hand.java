@@ -10,6 +10,13 @@ public class Hand {
     }
 
     /**
+     * Copy constructor
+     */
+    public Hand(Hand hand) {
+        this.hand = new ArrayList<>(hand.hand);
+    }
+
+    /**
      * Peeks the card held by the player.
      *
      * @param idx

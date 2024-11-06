@@ -14,9 +14,9 @@ public class Game {
     @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "For future game logic.")
     int round;
 
-    public Game(InputStream inputStream) {
-        this.players = new PlayerList();
-        this.deck = new Deck();
+    public Game(PlayerList playerList, Deck deck, InputStream inputStream) {
+        this.players = new PlayerList(playerList);
+        this.deck = new Deck(deck);
         this.in = new Scanner(inputStream, StandardCharsets.UTF_8);  // Initialize Scanner here to control its lifecycle
         this.round = 0;
     }

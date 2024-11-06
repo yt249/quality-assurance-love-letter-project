@@ -9,6 +9,13 @@ public class DiscardPile {
         this.cards = new ArrayList<>();
     }
 
+    /**
+     * Copy constructor
+     */
+    public DiscardPile(DiscardPile discardPile) {
+        this.cards = new ArrayList<>(discardPile.cards);
+    }
+
     public void add(Card c) {
         this.cards.add(c);
     }
