@@ -15,7 +15,9 @@ public class Deck {
      */
     public Deck(Deck deck) {
         this.deck = new Stack<>();
-        this.deck.addAll(deck.deck);
+        if (deck != null && deck.deck != null) {
+            this.deck.addAll(deck.deck);
+        }
     }
     
     public void build() {

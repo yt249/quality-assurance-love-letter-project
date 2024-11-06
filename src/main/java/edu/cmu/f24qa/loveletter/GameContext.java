@@ -13,7 +13,7 @@ public class GameContext {
 
     public GameContext(PlayerList players, Deck deck, Readable inputScanner) {
         this.players = new PlayerList(players);
-        this.deck = new Deck(deck);;
+        this.deck = new Deck(deck);
         this.inputScanner = new Scanner(inputScanner);
     }
 
@@ -34,9 +34,19 @@ public class GameContext {
     }
 
     public Optional<Player> selectOpponent() {
-        System.out.print("Who would you like to target: ");
-        String opponentName = inputScanner.nextLine();
-        return Optional.ofNullable(players.getPlayer(opponentName));
+        Optional<Player> selectedOpponent = Optional.empty();
+    
+        while (selectedOpponent.isEmpty()) {
+            System.out.print("Who would you like to target: ");
+            String opponentName = inputScanner.nextLine();
+            selectedOpponent = Optional.ofNullable(players.getPlayer(opponentName));
+            
+            if (selectedOpponent.isEmpty()) {
+                System.out.println("No such player found. Please try again.");
+            }
+        }
+    
+        return selectedOpponent;
     }
 
     public String readLine() {

@@ -15,8 +15,10 @@ public class PlayerList {
     /**
      * Copy constructor
      */
-    public PlayerList(PlayerList playerList) {
-        this.players = new LinkedList<>(playerList.players);
+    public PlayerList(@Nullable PlayerList playerList) {
+        this.players = (playerList != null && playerList.players != null)
+        ? new LinkedList<>(playerList.players)
+        : new LinkedList<>();
     }
 
     /**
