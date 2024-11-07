@@ -180,4 +180,9 @@ public class PlayerList {
         }
         return winner;
     }
+
+    /* for testing purpose */
+    public void addPlayer(Player player) {
+        players.addLast(player);
+    }
 }
