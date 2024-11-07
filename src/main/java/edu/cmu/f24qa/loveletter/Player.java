@@ -44,6 +44,10 @@ public class Player {
         this.discarded.add(this.hand.remove(0));
     }
 
+    public boolean isEliminated() {
+        return this.hand.getHand().isEmpty();
+    }
+
     /**
      * Switches the user's level of protection.
      */
@@ -53,6 +57,10 @@ public class Player {
 
     public Hand getHand() {
         return this.hand.copy();
+    }
+
+    public void addCard(Card card) {
+        this.hand.add(card);
     }
 
     public DiscardPile getDiscarded() {
