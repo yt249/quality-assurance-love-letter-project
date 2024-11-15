@@ -3,7 +3,6 @@ package edu.cmu.f24qa.loveletter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
 import edu.cmu.f24qa.loveletter.actions.ActionFactory;
 import edu.cmu.f24qa.loveletter.actions.CardAction;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -22,6 +21,14 @@ public class Game {
         this.deck = new Deck(deck);
         this.context = new GameContext(players, deck, new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         this.actionFactory = new ActionFactory();
+        this.round = 0;
+    }
+
+    public Game(PlayerList playerList, Deck deck, InputStream inputStream, ActionFactory actionFactory) {
+        this.players = new PlayerList(playerList);
+        this.deck = new Deck(deck);
+        this.context = new GameContext(players, deck, new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        this.actionFactory = actionFactory;
         this.round = 0;
     }
 
