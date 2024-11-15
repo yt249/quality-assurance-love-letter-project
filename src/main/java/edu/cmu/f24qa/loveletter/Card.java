@@ -7,7 +7,7 @@ public enum Card {
     HANDMAIDEN("Handmaiden", 4),
     PRINCE("Prince", 5),
     KING("King", 6),
-    COUNTESS("Countes", 7),
+    COUNTESS("Countess", 7),
     PRINCESS("Princess", 8);
 
     private String name;

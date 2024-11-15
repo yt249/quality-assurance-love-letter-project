@@ -122,9 +122,9 @@ public class Game {
      * @return the index of the chosen card
      */
     public int getCardIdx(Player user) {
-        int countessIdxWithRoyalty = handleRoyaltyCard(user);
-        if (countessIdxWithRoyalty != -1) {
-            return countessIdxWithRoyalty;
+        int royaltyIdxWithCountess = getRoyaltyIdxWithCountess(user);
+        if (royaltyIdxWithCountess != -1) {
+            return royaltyIdxWithCountess;
         }
         user.getHand().print();
         System.out.println();
@@ -134,7 +134,7 @@ public class Game {
         return idx;
     }
 
-    public int handleRoyaltyCard(Player turn) {
+    public int getRoyaltyIdxWithCountess(Player turn) {
         int royaltyPos = turn.getHand().royaltyPos();
         if (royaltyPos == -1) {
             return -1;
@@ -177,7 +177,7 @@ public class Game {
     private void playCard(Card card, Player user) {
         String cardName = card.getName();
 
-        user.getDiscarded().add(card);
+        user.addCardToDiscarded(card);
         context.setCurrentUser(user);
 
         CardAction action = actionFactory.getAction(cardName);

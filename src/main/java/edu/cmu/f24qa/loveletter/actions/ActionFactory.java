@@ -10,6 +10,7 @@ public class ActionFactory {
             case "king" -> new KingAction();
             case "handmaiden" -> new HandmaidenAction();
             case "princess" -> new PrincessAction();
+            case "countess" -> new CountessAction();
             default -> throw new IllegalArgumentException("Invalid card name: " + cardName);
         };
     }

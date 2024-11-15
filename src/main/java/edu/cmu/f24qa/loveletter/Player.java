@@ -67,6 +67,10 @@ public class Player {
         return this.discarded.copy();
     }
 
+    public void addCardToDiscarded(Card card) {
+        this.discarded.add(card);
+    }
+
     /**
      * Checks to see if the user is protected by a handmaiden.
      *

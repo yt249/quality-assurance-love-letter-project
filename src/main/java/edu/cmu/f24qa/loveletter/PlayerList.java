@@ -1,8 +1,9 @@
 package edu.cmu.f24qa.loveletter;
 
 import java.util.LinkedList;
-import org.checkerframework.checker.nullness.qual.Nullable;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class PlayerList {
 
@@ -131,7 +132,7 @@ public class PlayerList {
      */
     public void dealCards(Deck deck) {
         for (Player p : players) {
-            p.getHand().add(deck.draw());
+            p.addCard(deck.draw());
         }
     }
 
