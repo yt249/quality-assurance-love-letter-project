@@ -121,3 +121,31 @@ You can run Checkstyle via Maven with the following command:
   ```
   mvn clean compile
   ```
+
+### Test Coverage
+
+- Jacoco
+  - Whitebox Tests
+  ```
+  mvn clean compile
+  mvn test -Dtest=Whitebox*Test
+  mvn jacoco:report
+  ```
+  - Blackbox Tests
+  ```
+  mvn clean compile
+  mvn test -Dtest=Blackbox*Test
+  mvn jacoco:report
+  ```
+- PITest
+  1. Modify pom.xml to select target tests (Whitebox or Blackbox)
+  ```
+  <!-- PITest -->
+  ...
+      <param>edu.cmu.f24qa.loveletter.actions.Blackbox*Test</param>
+  ...
+  ```
+  2. Run PITest
+  ```
+  mvn clean compile test -DskipTests=false
+  ```

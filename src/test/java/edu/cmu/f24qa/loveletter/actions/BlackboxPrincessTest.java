@@ -1,6 +1,5 @@
 package edu.cmu.f24qa.loveletter.actions;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import edu.cmu.f24qa.loveletter.Deck;
