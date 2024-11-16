@@ -9,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import edu.cmu.f24qa.loveletter.GameContext;
@@ -27,7 +26,6 @@ public class WhiteboxPrincessTest {
      * Tests playing Princess card correctly eliminates the player
      *       + displays the appropriate elimination message
      */
-    @Disabled("This test is disabled")
     @Test
     public void testPrincessEliminatesPlayerSuccessfully() {
         // Capture console output
@@ -50,6 +48,7 @@ public class WhiteboxPrincessTest {
         
         // Add Princess to player's hand
         spyPlayer.addCard(Card.PRINCESS);
+        spyPlayer.addCard(Card.GUARD); // a card for eliminate() to remove
         
         // Execute the action
         spyGame.playTurnCard(spyPlayer);

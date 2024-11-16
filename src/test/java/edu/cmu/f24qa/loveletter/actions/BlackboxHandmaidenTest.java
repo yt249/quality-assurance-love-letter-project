@@ -31,7 +31,7 @@ public class BlackboxHandmaidenTest {
      * - Player should be protected
      * - Appropriate protection message should be displayed
      */
-    @Disabled("This test is temporary disabled")
+    
     @Test
     public void testHandmaidenProtectsSelf() {
         // Capture console output

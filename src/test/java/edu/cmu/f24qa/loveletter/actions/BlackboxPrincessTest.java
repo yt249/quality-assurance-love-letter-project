@@ -30,7 +30,6 @@ public class BlackboxPrincessTest {
      * - Player should be eliminated from the game
      * - Appropriate elimination message should be displayed
      */
-    @Disabled("This test is temporary disabled")
     @Test
     public void testPrincessEliminatesSelf() {
         // Capture console output
@@ -40,6 +39,7 @@ public class BlackboxPrincessTest {
         // Set up player
         Player testPlayer = new Player("Christy", new Hand(), new DiscardPile(), false, 0);
         testPlayer.addCard(Card.PRINCESS);
+        testPlayer.addCard(Card.GUARD);  // a card for eliminate() to remove
 
         // Set up players
         PlayerList players = new PlayerList(); 

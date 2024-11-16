@@ -9,7 +9,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import edu.cmu.f24qa.loveletter.GameContext;
@@ -27,7 +26,6 @@ public class WhiteboxHandmaidenTest {
      * Tests playing Handmaiden card correctly applies protection to the player
      *       + displays the appropriate message
      */
-    @Disabled("This test is disabled")
     @Test
     public void testHandmaidenProtectsPlayerSuccessfully() {
         // Capture console output
