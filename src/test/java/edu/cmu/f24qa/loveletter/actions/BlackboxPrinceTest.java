@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import edu.cmu.f24qa.loveletter.*;
@@ -81,10 +80,7 @@ public class BlackboxPrinceTest {
     /**
      * Tests the behavior of the Prince card when the target opponent discards a non-Princess card.
      * Verifies that the opponent discards their card and draws a new one from the deck.
-     * This test is currently disabled because the Prince action is not properly handling 
-     * the addition of the discarded card to the discard pile.
      */
-    @Disabled("Prince action is not adding discarded card into discarded pile.")
     @Test
     void testPrinceActionDiscardAndDraw() {
         // Modify the opponent's hand
@@ -107,7 +103,6 @@ public class BlackboxPrinceTest {
      * Verifies that no card is discarded or drawn, and the opponent retains
      * their original card and remains in the game.
      */
-    @Disabled("Prince action is not adding discarded card into discarded pile.")
     @Test
     public void testPrinceActionOpponentIsProtected() {
         // Enable protection for the opponent

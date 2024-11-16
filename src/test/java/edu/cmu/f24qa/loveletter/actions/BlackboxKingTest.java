@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import edu.cmu.f24qa.loveletter.*;
@@ -56,10 +55,8 @@ public class BlackboxKingTest {
 
     /**
      * Tests the KingAction to ensure that hands are swapped between the current player
-     * and the selected opponent. This test is currently disabled because the getHand 
-     * method returns a copy of the hand, making it difficult to validate the swap.
+     * and the selected opponent. d
      */
-    @Disabled("getHand method is returning copy")
     @Test
     void testKingActionSwapHands() {
         // Set the current user
@@ -75,10 +72,8 @@ public class BlackboxKingTest {
 
     /**
      * Tests the KingAction to ensure that the game re-prompts for a valid opponent
-     * if an invalid opponent name is provided. This test is currently disabled because 
-     * the getHand method returns a copy of the hand, making it difficult to validate the swap.
+     * if an invalid opponent name is provided. 
      */
-    @Disabled("getHand method is returning copy")
     @Test
     void testKingActionRePromptsForValidOpponent() {
         // Simulated input: invalid first input, valid second input
@@ -102,14 +97,18 @@ public class BlackboxKingTest {
      * Verifies that no card-swapping occurs, and both the player and the opponent
      * retain their original cards.
      */
-    @Disabled
     @Test
     public void testKingActionOpponentIsProtected() {
+        // Simulated input: invalid first input, valid second input
+        String simulatedInput = "Opponent\n";
+        InputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes(StandardCharsets.UTF_8));
+
+        // Reinitialize the context with the new input
+        context = new GameContext(context.getPlayers(), new Deck(), new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        context.setCurrentUser(player);
+
         // Enable protection for the opponent
         opponent.switchProtection();
-
-        // Set the current user
-        context.setCurrentUser(player);
 
         // Execute KingAction
         action.execute(context);

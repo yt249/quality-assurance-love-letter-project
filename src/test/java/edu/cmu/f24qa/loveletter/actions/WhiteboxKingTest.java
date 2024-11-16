@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
 
@@ -57,10 +56,8 @@ public class WhiteboxKingTest {
 
     /**
      * Tests the playTurnCard method to ensure that selecting and playing the King card
-     * swaps hands with the selected opponent. This test is currently disabled due to 
-     * limitations in validating hand-swapping behavior.
+     * swaps hands with the selected opponent.
      */
-    @Disabled
     @Test
     void testPlayTurnCardPlayKingCard() throws Exception {
         // Modify the player's hand for this test
@@ -85,15 +82,12 @@ public class WhiteboxKingTest {
         // Call playTurnCard
         game.playTurnCard(player);
 
-        // Verify the remaining card in the player's hand
-        assertEquals(Card.PRINCE, player.getHand().peek(0));
-
         // Verify that the current user was set correctly in the context
         verify(context).setCurrentUser(player);
 
         // Verify hand-swapping behavior
         assertEquals(Card.GUARD, player.getHand().peek(0)); // Player now has the Guard
-        assertEquals(Card.KING, opponent.getHand().peek(0)); // Opponent now has the King
+        assertEquals(Card.PRINCE, opponent.getHand().peek(0)); // Opponent now has the King
     }
 
     /**

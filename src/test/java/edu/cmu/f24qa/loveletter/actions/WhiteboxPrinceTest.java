@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Spy;
 
@@ -122,10 +121,8 @@ public class WhiteboxPrinceTest {
 
     /**
      * Tests the PrinceAction behavior when the opponent discards their card
-     * and draws a new card from the deck. This test is currently disabled 
-     * because the action does not add the discarded card to the discard pile.
+     * and draws a new card from the deck. 
      */
-    @Disabled("Prince action is not adding discarded card into discarded pile.")
     @Test
     void testPrinceActionDiscardAndDraw() {
         // Modify the opponent's hand for this test

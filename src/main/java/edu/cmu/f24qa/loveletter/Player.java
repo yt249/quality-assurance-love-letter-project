@@ -1,5 +1,7 @@
 package edu.cmu.f24qa.loveletter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class Player {
     private String name;
     private Hand hand;
@@ -55,8 +57,12 @@ public class Player {
         this.isProtected = !this.isProtected;
     }
 
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP", 
+        justification = "Game-Specific Business Logic Requires Direct Reference"
+    )
     public Hand getHand() {
-        return this.hand.copy();
+        return this.hand;
     }
 
     public void addCard(Card card) {

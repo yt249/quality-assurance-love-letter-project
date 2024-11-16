@@ -19,6 +19,7 @@ public class PrinceAction implements CardAction {
                 opponent.eliminate();
                 System.out.println(opponent.getName() + " had the Princess and is eliminated.");
             } else {
+                opponent.addCardToDiscarded(opponent.getHand().peek(0));
                 opponent.getHand().remove(0);  // Discard current card
                 opponent.getHand().add(context.getDeck().draw());  // Draw a new card
                 System.out.println(opponent.getName() + " draws a new card.");
