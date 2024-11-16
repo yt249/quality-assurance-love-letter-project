@@ -6,12 +6,14 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +32,7 @@ public class BlackboxCountessTest {
     private @NonNull Player opponent;
     private @NonNull Deck deck;
     private @Mock ActionFactory mockActionFactory;
+    private ActionFactory actionFactory;
     private ByteArrayOutputStream outContent;
 
     /**
@@ -45,6 +48,7 @@ public class BlackboxCountessTest {
         this.players.addPlayer(this.opponent);
         this.deck = new Deck();
         this.mockActionFactory = mock(ActionFactory.class);
+        this.actionFactory = new ActionFactory();
 
         // Capture System.out
         this.outContent = new ByteArrayOutputStream();
@@ -53,25 +57,16 @@ public class BlackboxCountessTest {
 
     /**
      * Sets up simulated user input for testing.
-     * Creates a new game instance with the provided input string.
+     * Creates a ByteArrayInputStream with the provided input string encoded in UTF-8.
+     * Used to simulate user input during card selection and target player selection.
      *
-     * @param input The string to be used as simulated user input
+     * @param input The string to be used as simulated user input (e.g., "0\n" for first option)
+     * @return ByteArrayInputStream containing the encoded input string
      */
-    private void setSimulatedInput(String input) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(
+    private ByteArrayInputStream setSimulatedInput(String input) {
+        return new ByteArrayInputStream(
             input.getBytes(StandardCharsets.UTF_8)
         );
-        this.game = new Game(players, deck, inputStream, mockActionFactory);
-        this.player = players.getCurrentPlayer();
-    }
-
-    /**
-     * Sets up a mock Countess action in the action factory.
-     * Creates a spy of CountessAction and configures the mock factory to return it.
-     */
-    private void setCountessAction() {
-        CountessAction countessAction = new CountessAction();
-        when(this.mockActionFactory.getAction(Card.COUNTESS.getName())).thenReturn(countessAction);
     }
 
     /**
@@ -87,14 +82,33 @@ public class BlackboxCountessTest {
     }
 
     /**
+     * Sets up a game instance for testing with specified input stream and action factory.
+     * Creates a spy object of Game class to enable method verification.
+     * If no input stream is provided, uses System.in as default.
+     * Updates the current player reference after game creation.
+     *
+     * @param inputStream The input stream to be used for game input, can be null
+     * @param actionFactory The action factory to be used for creating card actions
+     */
+    private void setUpGame(@Nullable ByteArrayInputStream inputStream, ActionFactory actionFactory) {
+        if (inputStream == null) {
+            this.game = spy(new Game(players, deck, System.in, actionFactory));
+        } else {
+            this.game = spy(new Game(players, deck, inputStream, actionFactory));
+        }
+        this.player = players.getCurrentPlayer();
+    }
+
+    /**
      * Tests playing Guard card when player has both Countess and Guard.
      * Expected behavior: Player should be able to choose and successfully play the Guard card.
      */
     @Test
     public void testCountessWithGuardPlayGuard() {
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
         setMockAction(Card.GUARD, new GuardAction());
+        setUpGame(inputStream, this.mockActionFactory);
 
-        setSimulatedInput("1\n"); // Choose to play Guard
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.GUARD);
         
@@ -108,9 +122,9 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithGuardPlayCountess() {
-        setCountessAction();
+        ByteArrayInputStream inputStream = setSimulatedInput("0\n");
+        setUpGame(inputStream, this.actionFactory);
 
-        setSimulatedInput("0\n"); // Choose to play Countess
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.GUARD);
         
@@ -125,10 +139,10 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithPriestPlayPriest() {
-        // mock priest action
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
         setMockAction(Card.PRIEST, new PriestAction());
+        setUpGame(inputStream, this.mockActionFactory);
 
-        setSimulatedInput("1\n"); // Choose to play Priest
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.PRIEST);
         
@@ -142,9 +156,9 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithPriestPlayCountess() {
-        setCountessAction();
+        ByteArrayInputStream inputStream = setSimulatedInput("0\n");
+        setUpGame(inputStream, this.actionFactory);
 
-        setSimulatedInput("0\n"); // Choose to play Priest
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.PRIEST);
 
@@ -159,9 +173,10 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithBaronPlayBaron() {
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
         setMockAction(Card.BARON, new BaronAction());
+        setUpGame(inputStream, this.mockActionFactory);
 
-        setSimulatedInput("1\n"); // Choose to play Baron
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.BARON);
         
@@ -175,9 +190,9 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithBaronPlayCountess() {
-        setCountessAction();
+        ByteArrayInputStream inputStream = setSimulatedInput("0\n");
+        setUpGame(inputStream, this.actionFactory);
 
-        setSimulatedInput("0\n"); // Choose to play Baron
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.BARON);
 
@@ -192,10 +207,10 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithHandmaidenPlayHandmaiden() {
-        // mock handmaiden action
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
         setMockAction(Card.HANDMAIDEN, new HandmaidenAction());
+        setUpGame(inputStream, this.mockActionFactory);
 
-        setSimulatedInput("1\n"); // Choose to play Handmaid
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.HANDMAIDEN);
         
@@ -209,9 +224,9 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithHandmaidenPlayCountess() {
-        setCountessAction();
+        ByteArrayInputStream inputStream = setSimulatedInput("0\n");
+        setUpGame(inputStream, this.actionFactory);
 
-        setSimulatedInput("0\n"); // Choose to play Handmaid
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.HANDMAIDEN);
 
@@ -226,10 +241,10 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithPrincePlayPrince() {
-        // mock prince action
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
         setMockAction(Card.PRINCE, new PrinceAction());
+        setUpGame(inputStream, this.mockActionFactory);
 
-        setSimulatedInput("1\n"); // Choose to play Prince
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.PRINCE);
         
@@ -243,10 +258,10 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithKingPlayKing() {
-        // mock king action
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
         setMockAction(Card.KING, new KingAction());
+        setUpGame(inputStream, this.mockActionFactory);
 
-        setSimulatedInput("1\n"); // Choose to play King
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.KING);
         
@@ -261,8 +276,9 @@ public class BlackboxCountessTest {
     @Test
     public void testCountessWithPrincessPlayPrincess() {
         setMockAction(Card.PRINCESS, new PrincessAction());
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
+        setUpGame(inputStream, this.mockActionFactory);
 
-        setSimulatedInput("1\n"); // Choose to play Princess
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.PRINCESS);
         
@@ -276,9 +292,9 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithPrincessPlayCountess() {
-        setCountessAction();
+        ByteArrayInputStream inputStream = setSimulatedInput("0\n");
+        setUpGame(inputStream, this.actionFactory);
 
-        setSimulatedInput("0\n"); // Choose to play Princess
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.PRINCESS);
 

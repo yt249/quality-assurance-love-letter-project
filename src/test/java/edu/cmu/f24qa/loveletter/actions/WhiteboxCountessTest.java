@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +36,7 @@ public class WhiteboxCountessTest {
     private @NonNull Player opponent;
     private @Mock Deck deck;
     private @Mock ActionFactory mockActionFactory;
+    private ActionFactory actionFactory;
     private ByteArrayOutputStream outContent;
 
     /**
@@ -50,7 +52,7 @@ public class WhiteboxCountessTest {
         this.players.addPlayer(this.opponent);
         this.deck = mock(Deck.class);
         this.mockActionFactory = mock(ActionFactory.class);
-        this.game = spy(new Game(players, deck, System.in, mockActionFactory));
+        this.actionFactory = new ActionFactory();
 
         // Capture System.out
         this.outContent = new ByteArrayOutputStream();
@@ -59,25 +61,16 @@ public class WhiteboxCountessTest {
 
     /**
      * Sets up simulated user input for testing.
-     * Creates a new game instance with the provided input string.
+     * Creates a ByteArrayInputStream with the provided input string encoded in UTF-8.
+     * Used to simulate user input during card selection and target player selection.
      *
-     * @param input The string to be used as simulated user input
+     * @param input The string to be used as simulated user input (e.g., "0\n" for first option)
+     * @return ByteArrayInputStream containing the encoded input string
      */
-    private void setSimulatedInput(String input) {
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(
+    private ByteArrayInputStream setSimulatedInput(String input) {
+        return new ByteArrayInputStream(
             input.getBytes(StandardCharsets.UTF_8)
         );
-        this.game = spy(new Game(players, deck, inputStream, mockActionFactory));
-        this.player = players.getCurrentPlayer();
-    }
-
-    /**
-     * Sets up a mock Countess action in the action factory.
-     * Creates a spy of CountessAction and configures the mock factory to return it.
-     */
-    private void setCountessAction() {
-        CountessAction countessAction = spy(new CountessAction());
-        when(this.mockActionFactory.getAction(Card.COUNTESS.getName())).thenReturn(countessAction);
     }
 
     /**
@@ -93,6 +86,24 @@ public class WhiteboxCountessTest {
     }
 
     /**
+     * Sets up a game instance for testing with specified input stream and action factory.
+     * Creates a spy object of Game class to enable method verification.
+     * If no input stream is provided, uses System.in as default.
+     * Updates the current player reference after game creation.
+     *
+     * @param inputStream The input stream to be used for game input, can be null
+     * @param actionFactory The action factory to be used for creating card actions
+     */
+    private void setUpGame(@Nullable ByteArrayInputStream inputStream, ActionFactory actionFactory) {
+        if (inputStream == null) {
+            this.game = spy(new Game(players, deck, System.in, actionFactory));
+        } else {
+            this.game = spy(new Game(players, deck, inputStream, actionFactory));
+        }
+        this.player = players.getCurrentPlayer();
+    }
+
+    /**
      * Tests Countess card play when there is no current user in the game context.
      * This is a white-box test that uses reflection to modify the game context.
      * Expected behavior: The turn should be skipped with an appropriate message.
@@ -102,8 +113,8 @@ public class WhiteboxCountessTest {
      */
     @Test
     public void testPlayCountessNullPlayer() throws NoSuchFieldException, IllegalAccessException {
-        setSimulatedInput("0\n");
-        setCountessAction();
+        ByteArrayInputStream inputStream = setSimulatedInput("0\n");
+        setUpGame(inputStream, this.actionFactory);
 
         GameContext mockContext = mock(GameContext.class);
         Field contextField = Game.class.getDeclaredField("context");
@@ -130,6 +141,7 @@ public class WhiteboxCountessTest {
     @Test
     public void testPlayTurnCardWithCountessAndPrince() {
         setMockAction(Card.PRINCE, new PrinceAction());
+        setUpGame(null, this.mockActionFactory);
 
         // Set up the player's hand with Countess and a royalty card
         this.player.addCard(Card.COUNTESS);
@@ -150,6 +162,7 @@ public class WhiteboxCountessTest {
     @Test
     public void testPlayTurnCardWithCountessAndKing() {
         setMockAction(Card.KING, new KingAction());
+        setUpGame(null, this.mockActionFactory);
 
         // Set up the player's hand with Countess and King
         this.player.addCard(Card.COUNTESS);
@@ -168,8 +181,8 @@ public class WhiteboxCountessTest {
      */
     @Test
     public void testPlayCountessWithNonRoyalty() {
-        setSimulatedInput("0\n");
-        setCountessAction();
+        ByteArrayInputStream inputStream = setSimulatedInput("0\n");
+        setUpGame(inputStream, this.actionFactory);
 
         // Set up the player's hand with Countess and non-royalty card
         this.player.addCard(Card.COUNTESS);
@@ -188,8 +201,9 @@ public class WhiteboxCountessTest {
      */
     @Test
     public void testPlayNonRoyaltyWithCountess() {
-        setSimulatedInput("1\n");
+        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
         setMockAction(Card.GUARD, new GuardAction());
+        setUpGame(inputStream, this.mockActionFactory);
 
         // Set up the player's hand with Countess and non-royalty card
         this.player.addCard(Card.COUNTESS);
