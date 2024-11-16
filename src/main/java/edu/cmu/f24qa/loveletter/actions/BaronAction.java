@@ -26,10 +26,12 @@ public class BaronAction implements CardAction {
                 user.eliminate();
             } else {
                 System.out.println("You have the same card!");
-                if (opponent.getDiscarded().value() > user.getDiscarded().value()) {
+                int userDiscardPile = user.getDiscarded().value();
+                int opponentDiscardPile = opponent.getDiscarded().value();
+                if (userDiscardPile > opponentDiscardPile) {
                     System.out.println("You have lost the used pile comparison");
                     opponent.eliminate();
-                } else {
+                } else if (userDiscardPile < opponentDiscardPile) {
                     System.out.println("You have won the used pile comparison");
                     user.eliminate();
                 }

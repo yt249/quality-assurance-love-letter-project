@@ -71,6 +71,10 @@ public class Player {
         this.discarded.add(card);
     }
 
+    public Card removeCardFromHand(int index) {
+        return this.hand.remove(index);
+    }
+
     /**
      * Checks to see if the user is protected by a handmaiden.
      *

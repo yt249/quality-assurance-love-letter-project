@@ -11,7 +11,6 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import edu.cmu.f24qa.loveletter.Card;
@@ -51,7 +50,6 @@ public class BlackboxBaronCardTest {
      * plays the Baron card.
      */
     @Test
-    @Disabled("select opponent doesn't check for isProtected.")
     void testAllOtherPlayersAreProtected() {
         // Set up user's hand with Baron (index 0) and Countess (index 1)
         spyUser.addCard(Card.BARON);
@@ -75,7 +73,6 @@ public class BlackboxBaronCardTest {
      * Test if player's hand > opponent's hand, opponent should be eliminated.
      */
     @Test
-    @Disabled("playCard doesn't discard card from hand")
     void testPlayerHandGreaterThanOpponentHand() {
         // Set up user's hand with Baron (index 0) and Countess (index 1)
         spyUser.addCard(Card.BARON);
@@ -98,7 +95,6 @@ public class BlackboxBaronCardTest {
      * Test if player's hand < opponent's hand, player should be eliminated.
      */
     @Test
-    @Disabled("getCurrentUser substitute player with a new instance.")
     void testPlayerHandLessThanOpponentHand() {
         // Set up user's hand with Guard (index 0) and Baron (index 1)
         spyUser.addCard(Card.GUARD); // value 1
@@ -122,7 +118,6 @@ public class BlackboxBaronCardTest {
      * opponent should be eliminated.
      */
     @Test
-    @Disabled("BaronAction compare DiscardPile wrong elimination logic.")
     void testPlayerDiscardPileGreaterThanOpponentDiscardPile() {
         // Set up user's hand with Guard (index 0) and Baron (index 1)
         spyUser.addCard(Card.GUARD);
@@ -154,7 +149,6 @@ public class BlackboxBaronCardTest {
      * player should be eliminated.
      */
     @Test
-    @Disabled("BaronAction compare DiscardPile wrong elimination logic.")
     void testPlayerDiscardPileLessThanOpponentDiscardPile() {
         // Set up user's hand with Guard (index 0) and Baron (index 1)
         spyUser.addCard(Card.GUARD);
@@ -184,7 +178,6 @@ public class BlackboxBaronCardTest {
      * nothing should happen (nobody is eliminated).
      */
     @Test
-    @Disabled("Wrong DiscardPile.value logic")
     void testPlayerDiscardPileEqualsToOpponentDiscardPile() {
         // Set up user's hand with Guard (index 0) and Baron (index 1)
         spyUser.addCard(Card.GUARD);
@@ -193,11 +186,11 @@ public class BlackboxBaronCardTest {
         // Set up user's discard pile with Guard
         spyUser.addCardToDiscarded(Card.GUARD); // value 1
 
-        // Set up opponent's hand with Guard (index 0)
+        // Set up opponent's hand with Guard
         spyOpponent.addCard(Card.GUARD);
 
-        // Set up opponent's discard pile with Baron
-        spyOpponent.addCardToDiscarded(Card.HANDMAIDEN);
+        // Set up opponent's discard pile with Handmaiden
+        spyOpponent.addCardToDiscarded(Card.HANDMAIDEN);  // value 4
         
         // user plays Baron
         doReturn(1).when(spyGame).getCardIdx(spyUser);

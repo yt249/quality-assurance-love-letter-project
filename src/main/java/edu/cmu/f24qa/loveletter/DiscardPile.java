@@ -23,7 +23,7 @@ public class DiscardPile {
     public int value() {
         int ret = 0;
         for (Card c : this.cards) {
-            ret = c.getValue();
+            ret += c.getValue();
         }
         return ret;
     }

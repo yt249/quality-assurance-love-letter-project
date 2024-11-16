@@ -110,7 +110,7 @@ public class Game {
 
     public void playTurnCard(Player turn) {
         int cardIdx = getCardIdx(turn);
-        playCard(turn.getHand().remove(cardIdx), turn);
+        playCard(turn.removeCardFromHand(cardIdx), turn);
     }
 
     /**

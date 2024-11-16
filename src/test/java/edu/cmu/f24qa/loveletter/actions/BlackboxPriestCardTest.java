@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import edu.cmu.f24qa.loveletter.Card;
@@ -60,7 +59,6 @@ public class BlackboxPriestCardTest {
      * Test if all other players are protected, nothing should happen when the player plays Priest.
      */
     @Test
-    @Disabled("selectOpponent doens't check for isProtected.")
     void testAllOtherPlayersAreProtected() {
         // Set up user's hand with Priest
         spyUser.addCard(Card.PRIEST);

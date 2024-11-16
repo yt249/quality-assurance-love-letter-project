@@ -1,7 +1,6 @@
 package edu.cmu.f24qa.loveletter.actions;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
@@ -83,7 +82,6 @@ public class WhiteboxBaronCardTest {
      * Test if player's hand < opponent's hand, player should be eliminated.
      */
     @Test
-    @Disabled("getCurrentUser substitute player with a new instance, player is not eliminated")
     void testPlayerHandLessThanOpponentHand() {
         // Set up user's hand with Baron (index 0) and Guard (index 1)
         spyUser.addCard(Card.BARON);
@@ -107,7 +105,6 @@ public class WhiteboxBaronCardTest {
      * opponent should be eliminated.
      */
     @Test
-    @Disabled("BaronAction compare DiscardPile wrong elimination logic.")
     void testPlayerDiscardPileGreaterThanOpponentDiscardPile() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         // Set up user's hand with Guard (index 0) and Baron (index 1)
         spyUser.addCard(Card.GUARD);
@@ -146,7 +143,6 @@ public class WhiteboxBaronCardTest {
      * player should be eliminated.
      */
     @Test
-    @Disabled("BaronAction compare DiscardPile wrong elimination logic.")
     void testPlayerDiscardPileLessThanOpponentDiscardPile() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         // Set up user's hand with Guard (index 0) and Baron (index 1)
         spyUser.addCard(Card.GUARD);
