@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 
 import org.mockito.Mock;
 import static org.mockito.Mockito.spy;
@@ -142,7 +141,6 @@ public class BlackboxGuardTest {
      * - No guess result messages should be displayed
      * Note: This test is currently disabled.
      */
-    @Disabled
     @Test
     public void testPlayGuardOpponentIsProtected() {
         // Set input
