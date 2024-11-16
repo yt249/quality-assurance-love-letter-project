@@ -34,7 +34,6 @@ public class WhiteboxGuardTest {
     private @NonNull Player player;
     private @NonNull Player opponent;
     private @Mock Deck deck;
-    private @Mock ActionFactory mockActionFactory;
     private ByteArrayOutputStream outContent;
 
     /**
@@ -50,7 +49,6 @@ public class WhiteboxGuardTest {
         this.players.addPlayer(this.player);
         this.players.addPlayer(this.opponent);
         this.deck = mock(Deck.class);
-        this.mockActionFactory = mock(ActionFactory.class);
 
         // Capture System.out
         this.outContent = new ByteArrayOutputStream();
@@ -64,22 +62,12 @@ public class WhiteboxGuardTest {
      *
      * @param input The string to be used as simulated user input (e.g., "0\nPrince\nBob\n")
      */
-    private void setSimulatedInput(String input) {
+    private void setUpGameWithSimulatedInput(String input) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(
             input.getBytes(StandardCharsets.UTF_8)
         );
-        this.game = spy(new Game(players, deck, inputStream, mockActionFactory));
+        this.game = spy(new Game(players, deck, inputStream));
         this.player = players.getCurrentPlayer();
-    }
-
-    /**
-     * Sets up a mock Guard action in the action factory.
-     * Creates a spy of GuardAction and configures the mock factory to return it.
-     * This allows for verification of Guard action behavior during tests.
-     */
-    private void setGuardAction() {
-        GuardAction guardAction = spy(new GuardAction());
-        when(this.mockActionFactory.getAction(Card.GUARD.getName())).thenReturn(guardAction);
     }
 
     /**
@@ -92,8 +80,7 @@ public class WhiteboxGuardTest {
      */
     @Test
     public void testPlayGuardNullPlayer() throws NoSuchFieldException, IllegalAccessException {
-        setSimulatedInput("0\n");
-        setGuardAction();
+        setUpGameWithSimulatedInput("0\n");
 
         GameContext mockContext = mock(GameContext.class);
         Field contextField = Game.class.getDeclaredField("context");
@@ -120,8 +107,7 @@ public class WhiteboxGuardTest {
     @Test
     public void testPlayGuardGuessCorrect() {
         // Set input
-        setSimulatedInput("0\nPrince\nBob\n");
-        setGuardAction();
+        setUpGameWithSimulatedInput("0\nPrince\nBob\n");
 
         // Set up the player's hand with Guard
         this.player.addCard(Card.GUARD);
@@ -145,8 +131,7 @@ public class WhiteboxGuardTest {
     @Test
     public void testPlayGuardGuessIncorrect() {
         // Set input
-        setSimulatedInput("0\nBaron\nBob\n");
-        setGuardAction();
+        setUpGameWithSimulatedInput("0\nBaron\nBob\n");
 
         // Set up the player's hand with Guard
         this.player.addCard(Card.GUARD);
