@@ -122,9 +122,9 @@ public class Game {
      * @return the index of the chosen card
      */
     public int getCardIdx(Player user) {
-        int royaltyIdxWithCountess = getRoyaltyIdxWithCountess(user);
-        if (royaltyIdxWithCountess != -1) {
-            return royaltyIdxWithCountess;
+        int countessIdxWithRoyalty = getCountessIdxWithRoyalty(user);
+        if (countessIdxWithRoyalty != -1) {
+            return countessIdxWithRoyalty;
         }
         user.getHand().print();
         System.out.println();
@@ -134,13 +134,13 @@ public class Game {
         return idx;
     }
 
-    public int getRoyaltyIdxWithCountess(Player turn) {
+    public int getCountessIdxWithRoyalty(Player turn) {
         int royaltyPos = turn.getHand().royaltyPos();
         if (royaltyPos == -1) {
             return -1;
         }
         int otherCardPos = (royaltyPos == 0) ? 1 : 0;
-        return turn.getHand().peek(otherCardPos).getValue() == 7 ? royaltyPos : -1;
+        return turn.getHand().peek(otherCardPos).getValue() == 7 ? otherCardPos : -1;
     }
 
     public void determineRoundWinner() {

@@ -140,8 +140,7 @@ public class WhiteboxCountessTest {
      */
     @Test
     public void testPlayTurnCardWithCountessAndPrince() {
-        setMockAction(Card.PRINCE, new PrinceAction());
-        setUpGame(null, this.mockActionFactory);
+        setUpGame(null, this.actionFactory);
 
         // Set up the player's hand with Countess and a royalty card
         this.player.addCard(Card.COUNTESS);
@@ -151,7 +150,7 @@ public class WhiteboxCountessTest {
         game.playTurnCard(this.player);
 
         // Verify that the Countess card was played
-        assertEquals(Card.PRINCE, this.player.getDiscarded().getCards().get(0));
+        assertEquals(Card.COUNTESS, this.player.getDiscarded().getCards().get(0));
     }
 
     /**
@@ -161,8 +160,7 @@ public class WhiteboxCountessTest {
      */
     @Test
     public void testPlayTurnCardWithCountessAndKing() {
-        setMockAction(Card.KING, new KingAction());
-        setUpGame(null, this.mockActionFactory);
+        setUpGame(null, this.actionFactory);
 
         // Set up the player's hand with Countess and King
         this.player.addCard(Card.COUNTESS);
@@ -171,7 +169,7 @@ public class WhiteboxCountessTest {
         // Execute the turn
         game.playTurnCard(this.player);
 
-        assertEquals(Card.KING, this.player.getDiscarded().getCards().get(0));
+        assertEquals(Card.COUNTESS, this.player.getDiscarded().getCards().get(0));
     }
 
     /**

@@ -241,15 +241,13 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithPrincePlayPrince() {
-        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
-        setMockAction(Card.PRINCE, new PrinceAction());
-        setUpGame(inputStream, this.mockActionFactory);
+        setUpGame(null, this.actionFactory);
 
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.PRINCE);
         
         game.playTurnCard(this.player);
-        assertEquals(Card.PRINCE, this.player.getDiscarded().getCards().get(0));
+        assertEquals(Card.COUNTESS, this.player.getDiscarded().getCards().get(0));
     }
 
     /**
@@ -258,15 +256,13 @@ public class BlackboxCountessTest {
      */
     @Test
     public void testCountessWithKingPlayKing() {
-        ByteArrayInputStream inputStream = setSimulatedInput("1\n");
-        setMockAction(Card.KING, new KingAction());
-        setUpGame(inputStream, this.mockActionFactory);
+        setUpGame(null, this.actionFactory);
 
         this.player.addCard(Card.COUNTESS);
         this.player.addCard(Card.KING);
         
         game.playTurnCard(this.player);
-        assertEquals(Card.KING, this.player.getDiscarded().getCards().get(0));
+        assertEquals(Card.COUNTESS, this.player.getDiscarded().getCards().get(0));
     }
 
     /**
