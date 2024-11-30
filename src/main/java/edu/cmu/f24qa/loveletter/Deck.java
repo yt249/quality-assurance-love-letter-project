@@ -59,4 +59,11 @@ public class Deck {
         deckCopy.addAll(this.deck); // Create a copy of the stack to avoid exposing internal representation
         return deckCopy;
     }
+
+    public void setDeck(Stack<Card> newDeck) {
+        this.deck = new Stack<>();
+        if (newDeck != null) {
+            this.deck.addAll(newDeck);
+        }
+    }
 }

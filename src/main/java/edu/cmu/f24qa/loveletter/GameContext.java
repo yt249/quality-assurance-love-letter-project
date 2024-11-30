@@ -24,7 +24,7 @@ public class GameContext {
     }
 
     public Deck getDeck() {
-        return deck;
+        return new Deck(deck);
     }
 
     @SuppressFBWarnings(

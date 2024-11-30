@@ -75,15 +75,19 @@ public class Game {
      */
     public void start() {
         while (players.getGameWinner() == null) {
-            setupNewGame();
-            while (!players.checkForRoundWinner() && deck.hasMoreCards()) {
-                Player turn = players.getCurrentPlayer();
-                executeTurn(turn);
-            }
-            determineRoundWinner();
+            startRound();
         }
         announceGameWinner();
 
+    }
+
+    public void startRound() {
+        setupNewGame();
+        while (!players.checkForRoundWinner() && deck.hasMoreCards()) {
+            Player turn = players.getCurrentPlayer();
+            executeTurn(turn);
+        }
+        determineRoundWinner();
     }
 
     public void setupNewGame() {
