@@ -93,6 +93,7 @@ public class Game {
     public void setupNewGame() {
         players.reset();
         initializeDeck();
+        removeCardFromDeck();
         players.dealCards(deck);
     }
 
@@ -170,6 +171,30 @@ public class Game {
     public void initializeDeck() {
         this.deck.build();
         this.deck.shuffle();
+    }
+
+    /**
+     * In the beginning of the game: 
+     *  - remove 1 card from deck 
+     *  - remove additional 3 cards from deck face up in a 2-player game
+     */
+    public void removeCardFromDeck(){
+        int playerSize = players.getPlayers().size();
+
+        // Remove 1 card from deck
+        deck.draw();
+
+        // Remove additional 3 cards from deck face up in a 2-player game
+        if (playerSize == 2){
+            Card drawnCard1 = deck.draw();
+            Card drawnCard2 = deck.draw();
+            Card drawnCard3 = deck.draw();
+
+            // Print out the three cards to indicate it is facing up
+            System.out.println(drawnCard1 + " was removed from the deck.");
+            System.out.println(drawnCard2 + " was removed from the deck.");
+            System.out.println(drawnCard3 + " was removed from the deck.");
+        }
     }
 
     /**
