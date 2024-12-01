@@ -203,14 +203,10 @@ public class Game {
 
         // Remove additional 3 cards from deck face up in a 2-player game
         if (playerSize == 2){
-            Card drawnCard1 = deck.draw();
-            Card drawnCard2 = deck.draw();
-            Card drawnCard3 = deck.draw();
-
-            // Print out the three cards to indicate it is facing up
-            System.out.println(drawnCard1 + " was removed from the deck.");
-            System.out.println(drawnCard2 + " was removed from the deck.");
-            System.out.println(drawnCard3 + " was removed from the deck.");
+            for (int i = 0; i < 3; i++) {
+                Card drawnCard = deck.draw();
+                System.out.println(drawnCard + " was removed from the deck.");
+            }
         }
     }
 
