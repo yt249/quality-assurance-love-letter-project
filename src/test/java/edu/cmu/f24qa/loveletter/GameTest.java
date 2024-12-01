@@ -4,6 +4,7 @@ import java.util.Stack;
 import java.lang.reflect.Field;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
@@ -209,5 +210,55 @@ public class GameTest {
 
         assertEquals(0, player1.getTokens(), "Player 1 should not win the round.");
         assertEquals(1, player2.getTokens(), "Player 2 should win the round with the Princess card.");
+    }
+
+    /**
+     * Tests the complete action of playing a card and applying its effect.
+     */
+    @Test
+    public void testExecuteTurnWithHandmaiden() throws NoSuchFieldException, IllegalAccessException {
+        // Create 2 players
+        Player player1 = new Player("Player1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player2", new Hand(), new DiscardPile(), false, 0);
+        
+        // Create and populate PlayerList
+        PlayerList players = new PlayerList();
+        players.addPlayer(player1);
+        players.addPlayer(player2);
+        
+        // Create custom deck using Stack
+        Stack<Card> cards = new Stack<>();
+        cards.push(Card.HANDMAIDEN); // Will be drawn by Player 1
+        cards.push(Card.PRIEST);     // Player 2's initial card
+        cards.push(Card.GUARD);      // Player 1's initial card
+
+        // Create spy deck and set the custom deck
+        Deck spyDeck = spy(new Deck());
+        spyDeck.setDeck(cards);
+
+        // Custom input to simulate selecting Handmaiden (index 1)
+        String simulatedInput = "1\n";
+        InputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes());
+        Game game = new Game(players, spyDeck, inputStream);
+
+        // Use reflection to set our spy deck
+        Field deckField = Game.class.getDeclaredField("deck");
+        deckField.setAccessible(true);
+        deckField.set(game, spyDeck);
+        
+        // Reset players and deal cards
+        players.dealCards(spyDeck);
+
+        // Execute player1's turn
+        game.executeTurn(player1);
+        
+        // Verify player1 is protected
+        assertTrue(player1.getIsProtected());
+
+        // Verify Handmaiden is in player1's discard pile
+        assertTrue(player1.getDiscarded().getCards().contains(Card.HANDMAIDEN), "Handmaiden should be in player1's discard pile");
+
+        // Verify Guard is still in Player 1's hand
+        assertTrue(player1.getHand().getHand().contains(Card.GUARD), "Guard should still be in player1's hand");
     }
 }
