@@ -1,5 +1,6 @@
 package edu.cmu.f24qa.loveletter;
 
+import java.util.List;
 import java.util.Stack;
 import java.lang.reflect.Field;
 
@@ -246,7 +247,7 @@ public class GameTest {
         Field deckField = Game.class.getDeclaredField("deck");
         deckField.setAccessible(true);
         deckField.set(game, spyDeck);
-        
+
         // Reset players and deal cards
         players.dealCards(spyDeck);
 
@@ -261,5 +262,283 @@ public class GameTest {
 
         // Verify Guard is still in Player 1's hand
         assertTrue(player1.getHand().getHand().contains(Card.GUARD), "Guard should still be in player1's hand");
+    }
+  
+    /**
+     * Tests the behavior of the game when the number of players is 2
+     * 
+     * Verifies that:
+     *  - The deck size is reduced by 4 (1 hidden card and 3 face-up cards)
+     *  - Console output logs the 3 face-up cards as removed
+     *  - The remaining cards in the deck are the correct counts for each card
+     */
+    @Test
+    void testDeckSizeStartWithTwoPlayers() throws NoSuchFieldException, IllegalAccessException{
+        // Redirect System.out to capture console output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        // Game with 2 players
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer("Player 1");
+        playerList.addPlayer("Player 2");
+
+        // Create a custom deck with cards in specific order
+        Stack<Card> customDeck = new Stack<>();
+        Card[] cards = {
+            Card.PRINCESS, Card.COUNTESS, Card.KING, Card.PRINCE,
+            Card.PRINCE, Card.HANDMAIDEN, Card.BARON, Card.PRIEST,
+            Card.GUARD, Card.GUARD, Card.GUARD, Card.GUARD,
+            Card.HANDMAIDEN, Card.BARON, Card.PRIEST, Card.GUARD
+        };
+        for (Card card : cards) {
+            customDeck.push(card);
+        }
+
+        // Create spy deck and set the custom deck
+        Deck spyDeck = spy(new Deck());
+        spyDeck.setDeck(customDeck);
+
+        // Create game with spy deck
+        Game game = new Game(playerList, spyDeck, System.in);
+
+        // Use reflection to set our spy deck
+        Field deckField = Game.class.getDeclaredField("deck");
+        deckField.setAccessible(true);
+        deckField.set(game, spyDeck);
+
+        // Get initial deck card size 
+        int initialDeckSize = spyDeck.getDeck().size();
+
+        // Removing cards from deck by system settings
+        game.removeCardFromDeck();
+
+        // Verify draw() was called exactly 4 times (1 hidden + 3 face-up)
+        verify(spyDeck, times(4)).draw();
+
+        // Verify console output contains the specific removed cards in order
+        String output = outContent.toString();
+        assertTrue(output.contains("Priest (2) was removed from the deck."), "First face-up card should be PRIEST");
+        assertTrue(output.contains("Baron (3) was removed from the deck."), "Second face-up card should be BARON");
+        assertTrue(output.contains("Handmaiden (4) was removed from the deck."), "Third face-up card should be HANDMAIDEN");
+
+        // Verify hidden card is not logged
+        assertFalse(output.contains("Guard (1) was removed from the deck."), "Hidden card should not be logged");
+
+        // Get the remaining cards in the deck
+        List<Card> remainingCards = spyDeck.getDeck();
+
+        // Verify deck has 12 cards
+        assertEquals(initialDeckSize - 4, remainingCards.size(), "Deck should have 12 cards remaining");
+
+        // Count cards in a simpler way
+        int guardCount = 0, priestCount = 0, baronCount = 0, handmaidenCount = 0;
+        int princeCount = 0, kingCount = 0, countessCount = 0, princessCount = 0;
+
+        for (Card card : remainingCards) {
+            switch (card) {
+                case GUARD: guardCount++; break;
+                case PRIEST: priestCount++; break;
+                case BARON: baronCount++; break;
+                case HANDMAIDEN: handmaidenCount++; break;
+                case PRINCE: princeCount++; break;
+                case KING: kingCount++; break;
+                case COUNTESS: countessCount++; break;
+                case PRINCESS: princessCount++; break;
+            }
+        }
+
+        // Verify the remaining card counts
+        assertEquals(4, guardCount, "Should have 4 GUARD cards");
+        assertEquals(1, priestCount, "Should have 1 PRIEST card");
+        assertEquals(1, baronCount, "Should have 1 BARON card");
+        assertEquals(1, handmaidenCount, "Should have 1 HANDMAIDEN card");
+        assertEquals(2, princeCount, "Should have 2 PRINCE cards");
+        assertEquals(1, kingCount, "Should have 1 KING card");
+        assertEquals(1, countessCount, "Should have 1 COUNTESS card");
+        assertEquals(1, princessCount, "Should have 1 PRINCESS card");
+    }
+
+    /**
+     * Tests the behavior of the game when the number of players is 3
+     * 
+     * Verifies that:
+     *  - The deck size is reduced by 1 (only 1 hidden card)
+     *  - No face-up cards are logged to the console
+     *  - The remaining cards in the deck are the correct counts for each card
+     */
+    @Test
+    void testDeckSizeStartWithThreePlayers() throws NoSuchFieldException, IllegalAccessException{
+        // Redirect System.out to capture console output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        // Game with 3 players
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer("Player 1");
+        playerList.addPlayer("Player 2");
+        playerList.addPlayer("Player 3");
+
+        // Create a custom deck with cards in specific order
+        Stack<Card> customDeck = new Stack<>();
+        Card[] cards = {
+            Card.PRINCESS, Card.COUNTESS, Card.KING, Card.PRINCE,
+            Card.PRINCE, Card.HANDMAIDEN, Card.BARON, Card.PRIEST,
+            Card.GUARD, Card.GUARD, Card.GUARD, Card.GUARD,
+            Card.HANDMAIDEN, Card.BARON, Card.PRIEST, Card.GUARD
+        };
+        for (Card card : cards) {
+            customDeck.push(card);
+        }
+
+        // Create spy deck and set the custom deck
+        Deck spyDeck = spy(new Deck());
+        spyDeck.setDeck(customDeck);
+
+        // Create game with spy deck
+        Game game = new Game(playerList, spyDeck, System.in);
+
+        // Use reflection to set our spy deck
+        Field deckField = Game.class.getDeclaredField("deck");
+        deckField.setAccessible(true);
+        deckField.set(game, spyDeck);
+
+        // Get initial deck card size 
+        int initialDeckSize = spyDeck.getDeck().size();
+
+        // Removing cards from deck by system settings
+        game.removeCardFromDeck();
+
+        // Verify draw() was called exactly 1 times
+        verify(spyDeck, times(1)).draw();
+
+        // Verify hidden card is not logged
+        String output = outContent.toString();
+        assertFalse(output.contains("Guard (1) was removed from the deck."), "Hidden card should not be logged");
+
+        // Get the remaining cards in the deck
+        List<Card> remainingCards = spyDeck.getDeck();
+
+        // Verify deck has 15 cards
+        assertEquals(initialDeckSize - 1, remainingCards.size(), "Deck should have 15 cards remaining");
+
+        // Count cards in a simpler way
+        int guardCount = 0, priestCount = 0, baronCount = 0, handmaidenCount = 0;
+        int princeCount = 0, kingCount = 0, countessCount = 0, princessCount = 0;
+
+        for (Card card : remainingCards) {
+            switch (card) {
+                case GUARD: guardCount++; break;
+                case PRIEST: priestCount++; break;
+                case BARON: baronCount++; break;
+                case HANDMAIDEN: handmaidenCount++; break;
+                case PRINCE: princeCount++; break;
+                case KING: kingCount++; break;
+                case COUNTESS: countessCount++; break;
+                case PRINCESS: princessCount++; break;
+            }
+        }
+
+        // Verify the remaining card counts
+        assertEquals(4, guardCount, "Should have 4 GUARD cards");
+        assertEquals(2, priestCount, "Should have 1 PRIEST card");
+        assertEquals(2, baronCount, "Should have 1 BARON card");
+        assertEquals(2, handmaidenCount, "Should have 1 HANDMAIDEN card");
+        assertEquals(2, princeCount, "Should have 2 PRINCE cards");
+        assertEquals(1, kingCount, "Should have 1 KING card");
+        assertEquals(1, countessCount, "Should have 1 COUNTESS card");
+        assertEquals(1, princessCount, "Should have 1 PRINCESS card");
+    }
+
+    /**
+     * Tests the behavior of the game when the number of players is 4
+     * 
+     * Verifies that:
+     *  - The deck size is reduced by 1 (only 1 hidden card)
+     *  - No face-up cards are logged to the console
+     *  - The remaining cards in the deck are the correct counts for each card
+     */
+    @Test
+    void testDeckSizeStartWithFourPlayers() throws NoSuchFieldException, IllegalAccessException{
+        // Redirect System.out to capture console output
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
+        // Game with 4 players
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer("Player 1");
+        playerList.addPlayer("Player 2");
+        playerList.addPlayer("Player 3");
+        playerList.addPlayer("Player 4");
+
+        // Create a custom deck with cards in specific order
+        Stack<Card> customDeck = new Stack<>();
+        Card[] cards = {
+            Card.PRINCESS, Card.COUNTESS, Card.KING, Card.PRINCE,
+            Card.PRINCE, Card.HANDMAIDEN, Card.BARON, Card.PRIEST,
+            Card.GUARD, Card.GUARD, Card.GUARD, Card.GUARD,
+            Card.HANDMAIDEN, Card.BARON, Card.PRIEST, Card.GUARD
+        };
+        for (Card card : cards) {
+            customDeck.push(card);
+        }
+
+        // Create spy deck and set the custom deck
+        Deck spyDeck = spy(new Deck());
+        spyDeck.setDeck(customDeck);
+
+        // Create game with spy deck
+        Game game = new Game(playerList, spyDeck, System.in);
+
+        // Use reflection to set our spy deck
+        Field deckField = Game.class.getDeclaredField("deck");
+        deckField.setAccessible(true);
+        deckField.set(game, spyDeck);
+
+        // Get initial deck card size 
+        int initialDeckSize = spyDeck.getDeck().size();
+
+        // Removing cards from deck by system settings
+        game.removeCardFromDeck();
+
+        // Verify draw() was called exactly 1 times
+        verify(spyDeck, times(1)).draw();
+
+        // Verify hidden card is not logged
+        String output = outContent.toString();
+        assertFalse(output.contains("Guard (1) was removed from the deck."), "Hidden card should not be logged");
+
+        // Get the remaining cards in the deck
+        List<Card> remainingCards = spyDeck.getDeck();
+
+        // Verify deck has 15 cards
+        assertEquals(initialDeckSize - 1, remainingCards.size(), "Deck should have 15 cards remaining");
+
+        // Count cards in a simpler way
+        int guardCount = 0, priestCount = 0, baronCount = 0, handmaidenCount = 0;
+        int princeCount = 0, kingCount = 0, countessCount = 0, princessCount = 0;
+
+        for (Card card : remainingCards) {
+            switch (card) {
+                case GUARD: guardCount++; break;
+                case PRIEST: priestCount++; break;
+                case BARON: baronCount++; break;
+                case HANDMAIDEN: handmaidenCount++; break;
+                case PRINCE: princeCount++; break;
+                case KING: kingCount++; break;
+                case COUNTESS: countessCount++; break;
+                case PRINCESS: princessCount++; break;
+            }
+        }
+
+        // Verify the remaining card counts
+        assertEquals(4, guardCount, "Should have 4 GUARD cards");
+        assertEquals(2, priestCount, "Should have 1 PRIEST card");
+        assertEquals(2, baronCount, "Should have 1 BARON card");
+        assertEquals(2, handmaidenCount, "Should have 1 HANDMAIDEN card");
+        assertEquals(2, princeCount, "Should have 2 PRINCE cards");
+        assertEquals(1, kingCount, "Should have 1 KING card");
+        assertEquals(1, countessCount, "Should have 1 COUNTESS card");
+        assertEquals(1, princessCount, "Should have 1 PRINCESS card");
     }
 }
