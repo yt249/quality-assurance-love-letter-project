@@ -4,10 +4,11 @@ import java.util.Stack;
 import java.lang.reflect.Field;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,7 +25,6 @@ public class GameTest {
     /* 
      * Verify a round shall end when only one player has cards.
      */
-    @Disabled("Game.round not increased after round ends.")
     @Test
     void testRoundEndsIfOnlyOnePlayerHasCards() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Deck mockDeck = mock(Deck.class);
@@ -66,7 +66,6 @@ public class GameTest {
     /*
      * Integration Test: Verify that a round shall end if the deck is empty.
      */
-    @Disabled("Game.round not increased after round ends.")
     @Test
     void testRoundEndsIfDeckIsEmpty() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         // Mock Deck and stub hasMoreCards to simulate the deck-empty scenario
@@ -191,7 +190,6 @@ public class GameTest {
      * Verify that player with the highest number in hand wins the round
      * when the round ends with more than one player having cards.
      */
-    @Disabled("Players' hands shall be compared before comparing their discard piles.")
     @Test
     void testDetermineRoundWinnerBasedOnHandCards() {
         PlayerList players = new PlayerList();
@@ -205,11 +203,14 @@ public class GameTest {
         players.addPlayer(player2);
 
         Game game = new Game(players, null, new ByteArrayInputStream(new byte[0]));
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
 
         game.determineRoundWinner();
 
         assertEquals(0, player1.getTokens(), "Player 1 should not win the round.");
         assertEquals(1, player2.getTokens(), "Player 2 should win the round with the Princess card.");
+        assertTrue(outContent.toString().contains("Player 2 has won this round!"));
     }
 
     /**

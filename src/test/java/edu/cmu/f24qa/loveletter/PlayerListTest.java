@@ -90,7 +90,6 @@ public class PlayerListTest {
     /*
      * Verify that checkForRoundWinner throws exception when no players have cards.
      */
-    @Disabled("checkForRoundWinner should throw exception when no players have cards.")
     @Test
     void testCheckForRoundWinnerWhenNoPlayersHaveCards() {
         PlayerList playerList = new PlayerList();

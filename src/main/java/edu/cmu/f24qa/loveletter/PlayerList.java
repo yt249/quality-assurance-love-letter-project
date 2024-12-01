@@ -1,8 +1,9 @@
 package edu.cmu.f24qa.loveletter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class PlayerList {
@@ -94,6 +95,9 @@ public class PlayerList {
                 count++;
             }
         }
+        if (count == 0) {
+            throw new IllegalStateException("No players have cards.");
+        }
         return count == 1;
     }
 
@@ -165,21 +169,53 @@ public class PlayerList {
     }
 
     /**
-     * Returns the player with the highest used pile value.
+     * Returns the list of players with the highest used pile value.
      *
-     * @return the player with the highest used pile value
+     * @return the list of players with the highest used pile value
      */
-    public @NonNull Player compareUsedPiles() {
+    public List<Player> compareUsedPiles(List<Player> tiedPlayers) {
+        if (tiedPlayers.isEmpty()) {
+            throw new IllegalStateException("Passed player list is empty");
+        }
+        List<Player> tiedWinners = new ArrayList<>();
+        int highestDiscardPileValue = -1;
+
+        for (Player player: players) {
+            int discardPileValue = player.getDiscarded().value();
+            if (discardPileValue > highestDiscardPileValue) {
+                highestDiscardPileValue = discardPileValue;
+                tiedWinners.clear();
+                tiedWinners.add(player);
+            } else if (discardPileValue == highestDiscardPileValue) {
+                tiedWinners.add(player);
+            }
+        }
+        return tiedWinners;
+    }
+
+    /*
+     * Returns a list of players with the highest value hand card
+     */
+    public List<Player> compareHand() {
         if (players.isEmpty()) {
             throw new IllegalStateException("Player list is empty");
         }
-        Player winner = players.getFirst();
-        for (Player p : players) {
-            if (p.getDiscarded().value() > winner.getDiscarded().value()) {
-                winner = p;
+        List<Player> tiedPlayers = new ArrayList<>();
+        int highestHandValue = -1;
+
+        for (Player player: players) {
+            if (player.getHand().hasCards()) {
+                int handValue = player.getHand().peek(0).getValue(); // Get the value of the card in hand
+                if (handValue > highestHandValue) {
+                    highestHandValue = handValue;
+                    tiedPlayers.clear();
+                    tiedPlayers.add(player);
+                } else if (handValue == highestHandValue) {
+                    tiedPlayers.add(player);
+                }
             }
         }
-        return winner;
+        return tiedPlayers;
     }
 
     /* for testing purpose */

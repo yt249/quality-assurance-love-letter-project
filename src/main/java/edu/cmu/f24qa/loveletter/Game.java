@@ -3,18 +3,18 @@ package edu.cmu.f24qa.loveletter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.cmu.f24qa.loveletter.actions.ActionFactory;
 import edu.cmu.f24qa.loveletter.actions.CardAction;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class Game {
     private PlayerList players;
     private Deck deck;
     private GameContext context;
     private ActionFactory actionFactory;
-
-    @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "For future game logic.")
-    int round;
+    private int round;
 
     public Game(PlayerList playerList, Deck deck, InputStream inputStream) {
         this.players = new PlayerList(playerList);
@@ -88,6 +88,7 @@ public class Game {
             executeTurn(turn);
         }
         determineRoundWinner();
+        round += 1;
     }
 
     public void setupNewGame() {
@@ -149,16 +150,32 @@ public class Game {
     }
 
     public void determineRoundWinner() {
-        Player winner;
-        if (players.checkForRoundWinner() && players.getRoundWinner() != null) {
+        Player winner = null;
+        List<Player> tiedWinners = new ArrayList<>();
+        if (players.checkForRoundWinner()) {
             winner = players.getRoundWinner();
         } else {
-            winner = players.compareUsedPiles();
+            List<Player> highestHandPlayers = players.compareHand();
+            if (highestHandPlayers.size() == 1) {
+                winner = highestHandPlayers.get(0);
+            } else if (highestHandPlayers.size() > 1) {
+                tiedWinners = players.compareUsedPiles(highestHandPlayers);
+                if (tiedWinners.size() == 1) {
+                    winner = tiedWinners.get(0);
+                }
+            }
         }
 
         if (winner != null) {
             winner.addToken();
             System.out.println(winner.getName() + " has won this round!");
+            players.print();
+        } else if (!tiedWinners.isEmpty()) {
+            System.out.println("It's a tie! The following players have won this round:");
+            for (Player player : tiedWinners) {
+                player.addToken();
+                System.out.println(player.getName());
+            }
             players.print();
         }
     }
