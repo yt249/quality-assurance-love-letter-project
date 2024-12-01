@@ -142,4 +142,29 @@ public class GameTest {
         // Verify that shuffle was called
         verify(spyDeck, times(1)).shuffle();
     }
+
+    /*
+     * Verify that player with the highest number in hand wins the round
+     * when the round ends with more than one player having cards.
+     */
+    @Disabled("Players' hands shall be compared before comparing their discard piles.")
+    @Test
+    void testDetermineRoundWinnerBasedOnHandCards() {
+        PlayerList players = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+
+        player1.addCard(Card.PRINCE); // Value = 5
+        player2.addCard(Card.PRINCESS); // Value = 8
+
+        players.addPlayer(player1);
+        players.addPlayer(player2);
+
+        Game game = new Game(players, null, new ByteArrayInputStream(new byte[0]));
+
+        game.determineRoundWinner();
+
+        assertEquals(0, player1.getTokens(), "Player 1 should not win the round.");
+        assertEquals(1, player2.getTokens(), "Player 2 should win the round with the Princess card.");
+    }
 }
