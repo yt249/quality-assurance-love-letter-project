@@ -1,6 +1,9 @@
 package edu.cmu.f24qa.loveletter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -44,5 +47,64 @@ public class PlayerListTest {
 
         assertEquals(players.getPlayers().size(), 3);
         assertEquals(result.getName(), "winner");
+    }
+
+    /*
+     * Verify that checkForRoundWinner returns true when only one player has cards. 
+     */
+    @Test
+    void testCheckForRoundWinnerWhenOnlyOnePlayerHasCards() {
+        // Add two players to the player list
+        PlayerList playerList = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+        player1.addCard(Card.PRIEST); // only Player 1 has a card
+        playerList.addPlayer(player1);
+        playerList.addPlayer(player2);
+
+        boolean hasRoundWinner = playerList.checkForRoundWinner();
+
+        assertTrue(hasRoundWinner, "There should be a round winner");
+    }
+
+    /*
+     * Verify that checkForRoundWinner returns false when multiple players have cards.
+     */
+    @Test
+    void testCheckForRoundWinnerWhenMultiplePlayersHaveCards() {
+        // Add two players to the player list
+        PlayerList playerList = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+        // Both players have a card
+        player1.addCard(Card.PRIEST);
+        player2.addCard(Card.BARON);
+        playerList.addPlayer(player1);
+        playerList.addPlayer(player2);
+
+        boolean hasRoundWinner = playerList.checkForRoundWinner();
+
+        assertFalse(hasRoundWinner, "There should not be a round winner when multiple players have cards.");
+    }
+
+    /*
+     * Verify that checkForRoundWinner throws exception when no players have cards.
+     */
+    @Disabled("checkForRoundWinner should throw exception when no players have cards.")
+    @Test
+    void testCheckForRoundWinnerWhenNoPlayersHaveCards() {
+        PlayerList playerList = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+        playerList.addPlayer(player1);
+        playerList.addPlayer(player2);
+
+        Exception exception = assertThrows(
+            IllegalStateException.class, 
+            () -> playerList.checkForRoundWinner(), 
+            "Expected checkForRoundWinner to throw an IllegalStateException when no players have cards."
+        );
+
+        assertEquals("No players have cards.", exception.getMessage());
     }
 }

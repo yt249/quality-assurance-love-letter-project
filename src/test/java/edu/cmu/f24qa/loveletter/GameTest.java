@@ -16,8 +16,51 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class GameTest {
+
+    /* 
+     * Verify a round shall end when only one player has cards.
+     */
+    @Disabled("Game.round not increased after round ends.")
+    @Test
+    void testRoundEndsIfOnlyOnePlayerHasCards() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        Deck mockDeck = mock(Deck.class);
+        when(mockDeck.hasMoreCards()).thenReturn(true); // Deck is not empty
+
+        Player player1 = mock(Player.class);
+        PlayerList players = new PlayerList();
+        players.addPlayer(player1);
+        PlayerList spyPlayers = spy(players);
+        doReturn(player1).when(spyPlayers).getCurrentPlayer();
+
+        doReturn(false, false, true).when(spyPlayers).checkForRoundWinner(); // Simulate only one player has cards after 2 turns
+        doReturn(null, player1).when(spyPlayers).getGameWinner(); // No game winner initially
+
+        Game game = new Game(null, null, new ByteArrayInputStream(new byte[0]));
+        Field deckField = Game.class.getDeclaredField("deck");
+        deckField.setAccessible(true);
+        deckField.set(game, mockDeck);
+
+        Field playersField = Game.class.getDeclaredField("players");
+        playersField.setAccessible(true);
+        playersField.set(game, spyPlayers);
+
+        Game spyGame = spy(game);
+
+        doNothing().when(spyGame).setupNewGame(); // Skip new game setup
+        doNothing().when(spyGame).executeTurn(any(Player.class)); // Skip actual turn execution
+        doNothing().when(spyGame).determineRoundWinner(); // Skip determine round winner
+
+        int initialRound = spyGame.getRound();
+        spyGame.startRound();;
+
+        verify(spyPlayers, times(3)).checkForRoundWinner(); // Verify checkForRoundWinner was called
+        verify(spyGame, times(1)).determineRoundWinner(); // Verify round ends when one player has cards
+        verify(spyGame, times(2)).executeTurn(any(Player.class));
+        assertTrue(spyGame.getRound() == initialRound + 1, "The round number should increase after the round ends.");  
+    }
 
     /*
      * Integration Test: Verify that a round shall end if the deck is empty.
@@ -27,7 +70,7 @@ public class GameTest {
     void testRoundEndsIfDeckIsEmpty() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         // Mock Deck and stub hasMoreCards to simulate the deck-empty scenario
         Deck mockDeck = mock(Deck.class);
-        doReturn(true, true, false).when(mockDeck).hasMoreCards();  // Simulate the deck becoming empty after 3 checks
+        doReturn(true, true, false).when(mockDeck).hasMoreCards();  // Simulate the deck becoming empty after 3 turns
 
         Player mockPlayer = mock(Player.class);
         PlayerList players = new PlayerList();
@@ -59,7 +102,7 @@ public class GameTest {
 
         verify(mockDeck, times(3)).hasMoreCards();
         verify(spyGame, times(1)).determineRoundWinner();
-        assertTrue(spyGame.getRound() == initialRound + 2, "The round number should increase after the round ends.");
+        assertTrue(spyGame.getRound() == initialRound + 1, "The round number should increase after the round ends.");
     }
   
     /**
