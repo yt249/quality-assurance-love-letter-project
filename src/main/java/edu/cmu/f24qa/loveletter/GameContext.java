@@ -27,6 +27,10 @@ public class GameContext {
         return new Deck(deck);
     }
 
+    public Card drawCard() {
+        return deck.draw();
+    }
+
     @SuppressFBWarnings(
         value = "EI_EXPOSE_REP2", 
         justification = "Game-Specific Business Logic Requires Direct Reference"

@@ -40,9 +40,6 @@ public class WhiteboxPrinceTest {
      */
     @BeforeEach
     void setup() {
-        InputStream dummyInputStream = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
-        context = spy(new GameContext(null, null, new InputStreamReader(dummyInputStream)));
-
         // Initialize hands
         Hand playerHand = new Hand();
         playerHand.add(Card.PRINCE);
@@ -56,6 +53,10 @@ public class WhiteboxPrinceTest {
 
         // Initialize deck
         deck = spy(new Deck());
+        deck.build();
+
+        InputStream dummyInputStream = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
+        context = spy(new GameContext(null, deck, new InputStreamReader(dummyInputStream)));
     }
 
     /**
@@ -130,17 +131,16 @@ public class WhiteboxPrinceTest {
         opponent.getHand().add(Card.GUARD);
 
         // Mock new card draw
-        Card newCard = Card.BARON;
+        Card newCard = context.getDeck().draw();
         doReturn(player).when(context).getCurrentUser();
         doReturn(Optional.of(opponent)).when(context).selectOpponent();
-        doReturn(deck).when(context).getDeck();
         doReturn(newCard).when(deck).draw();
 
         PrinceAction action = new PrinceAction();
         action.execute(context);
 
         // Assert that the opponent discards their Guard card and draws a new Baron card
-        assertEquals(Card.BARON, opponent.getHand().peek(0));
+        assertEquals(newCard, opponent.getHand().peek(0));
         assertEquals(Card.GUARD, opponent.getDiscarded().getCards().get(0));
     }
 }
