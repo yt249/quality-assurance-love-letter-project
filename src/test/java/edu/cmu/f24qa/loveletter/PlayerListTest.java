@@ -50,6 +50,29 @@ public class PlayerListTest {
     }
 
     /*
+     * Verify that in a four-player game,
+     * a player shall win the game after earning 4 Tokens of Affection.
+     */
+    @Disabled("Incorrect getGameWinner implementation.")
+    @Test
+    void testGetGameWinnerForFourPlayerGame() {
+        PlayerList players = new PlayerList();
+        Player winner = new Player("winner", new Hand(), new DiscardPile(), false, 4);
+        Player loser1 = new Player("loser1", new Hand(), new DiscardPile(), false, 0);
+        Player loser2 = new Player("loser2", new Hand(), new DiscardPile(), false, 0);
+        Player loser3 = new Player("loser3", new Hand(), new DiscardPile(), false, 0);
+        players.addPlayer(winner);
+        players.addPlayer(loser1);
+        players.addPlayer(loser2);
+        players.addPlayer(loser3);
+
+        Player result = players.getGameWinner();
+
+        assertEquals(players.getPlayers().size(), 4);
+        assertEquals(result.getName(), "winner");
+    }
+
+    /*
      * Verify that checkForRoundWinner returns true when only one player has cards. 
      */
     @Test
