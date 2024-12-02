@@ -15,11 +15,13 @@ import org.mockito.InOrder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -306,6 +308,64 @@ public class GameTest {
         assertTrue(player1.getHand().getHand().contains(Card.GUARD), "Guard should still be in player1's hand");
     }
   
+    /**
+     * Verifies that a card requiring a target is discarded without effect
+     * if no eligible players can be chosen due to effects such as Handmaid.
+     */
+    @Test
+    void testPlayTurnCardWhenNoEligiblePlayers() throws Exception {
+        // Setup: Create a player list with two players
+        PlayerList players = new PlayerList();
+        Player player1 = spy(new Player("Player 1", new Hand(), new DiscardPile(), false, 0));
+
+        // Create a spy for Player 2's Hand
+        Hand player2Hand = spy(new Hand());
+        Player player2 = spy(new Player("Player 2", player2Hand, new DiscardPile(), true, 0)); // Protected by Handmaid
+        players.addPlayer(player1);
+        players.addPlayer(player2);
+
+        // Give Player 1 a card requiring a target (e.g., Guard)
+        player1.getHand().add(Card.GUARD);
+
+        // Set Player 2's hand with a specific card (e.g., Priest)
+        player2.getHand().add(Card.PRIEST);
+
+        // Simulate input to select the Guard card (index 0 in hand)
+        String simulatedInput = "0\nPRIEST\n"; // Simulate user input to play the first card
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes());
+
+        // Create a custom deck (not used in this test, but required for Game instance)
+        Deck customDeck = new Deck();
+
+        // Create a game instance
+        Game game = spy(new Game(players, customDeck, inputStream));
+
+        // Capture console output
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        // Directly test `playTurnCard` with Player 1
+        game.playTurnCard(player1);
+
+        // Verify console output
+        String output = outputStream.toString();
+        assertTrue(output.contains("All opponents are protected. Move to the next player."), 
+            "Should show message about all opponents being protected");
+
+        // Verify that the card was discarded
+        assertTrue(player1.getHand().getHand().isEmpty(), "Player 1's hand should be empty after playing the card.");
+        assertEquals(Card.GUARD, player1.getDiscarded().getCards().get(0), "Player 1's discard pile should contain the Guard card.");
+
+        // Verify that Player 2's hand remains intact
+        assertEquals(Card.PRIEST, player2.getHand().peek(0), "Player 2 should still have the Priest card.");
+
+        // Verify that Player 2 was not eliminated
+        assertFalse(player2.isEliminated(), "Player 2 should not be eliminated even if their card was guessed correctly.");
+
+        // Verify that peek() was never called on Player 2's hand
+        verify(player2Hand, never()).peek(anyInt());
+    } 
+
     /**
      * Tests the behavior of the game when the number of players is 2
      * 
