@@ -55,7 +55,7 @@ public class GameContext {
         Optional<Player> selectedOpponent = Optional.empty();
         boolean isAllOpponentProtected = true;
         for (Player player: players.getPlayers()) {
-            if (!player.equals(this.getCurrentUser()) && !player.getIsProtected()) {
+            if (!player.equals(this.getCurrentUser()) && !player.getIsProtected() && !player.isEliminated()) {
                 isAllOpponentProtected = false;
             }
         }
