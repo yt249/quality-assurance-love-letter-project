@@ -57,8 +57,8 @@ public class PlayerList {
      */
     public void reset() {
         for (Player p : players) {
-            p.getHand().clear();
-            p.getDiscarded().clear();
+            p.clearHand();
+            p.clearDiscarded();;
         }
     }
 

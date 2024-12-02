@@ -43,7 +43,8 @@ public class Player {
      * Eliminates the player from the round by discarding their hand.
      */
     public void eliminate() {
-        this.discarded.add(this.hand.remove(0));
+        this.clearHand();
+        this.clearDiscarded();
     }
 
     public boolean isEliminated() {
@@ -69,6 +70,10 @@ public class Player {
         this.hand.add(card);
     }
 
+    public void clearHand() {
+        this.hand.clear();
+    }
+
     public DiscardPile getDiscarded() {
         return this.discarded.copy();
     }
@@ -79,6 +84,10 @@ public class Player {
 
     public Card removeCardFromHand(int index) {
         return this.hand.remove(index);
+    }
+
+    public void clearDiscarded() {
+        this.discarded.clear();
     }
 
     /**

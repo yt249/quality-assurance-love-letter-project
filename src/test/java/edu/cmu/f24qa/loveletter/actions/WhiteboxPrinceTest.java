@@ -93,8 +93,7 @@ public class WhiteboxPrinceTest {
         // Verify that the current user was set correctly in the context
         verify(context).setCurrentUser(player);
 
-        // Verify opponent is eliminated and their card is discarded
-        assertEquals(Card.PRINCESS, opponent.getDiscarded().getCards().get(0));
+        // Verify opponent is eliminated
         assertTrue(opponent.isEliminated());
     }
 

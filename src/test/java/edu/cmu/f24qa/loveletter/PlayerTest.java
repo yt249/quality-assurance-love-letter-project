@@ -28,10 +28,6 @@ class PlayerTest {
         // Verify the player's hand is empty after elimination
         assertTrue(player.isEliminated(), "Player should be eliminated when their hand is empty.");
         assertEquals(0, player.getHand().getHand().size(), "Player's hand should be empty after elimination.");
-
-        // Verify the discarded pile contains the discarded card
-        DiscardPile discardedCards = player.getDiscarded();
-        assertEquals(1, discardedCards.getCards().size(), "Player's discarded pile should contain one card.");
-        assertEquals(Card.GUARD, discardedCards.getCards().get(0));
+        assertEquals(0, player.getDiscarded().getCards().size(), "Player's discard pile should be empty after elimination.");
     }
 }

@@ -72,9 +72,8 @@ public class BlackboxPrinceTest {
         // Execute PrinceAction
         action.execute(context);
 
-        // Verify opponent is eliminated and card is discarded
+        // Verify opponent is eliminated
         assertTrue(opponent.isEliminated());
-        assertEquals(Card.PRINCESS, opponent.getDiscarded().getCards().get(0));
     }
 
     /**
