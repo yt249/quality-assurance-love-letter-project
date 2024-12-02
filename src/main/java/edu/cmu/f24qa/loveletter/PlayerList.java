@@ -193,6 +193,9 @@ public class PlayerList {
         int highestDiscardPileValue = -1;
 
         for (Player player: players) {
+            if (player.isEliminated()) {
+                continue;
+            }
             int discardPileValue = player.getDiscarded().value();
             if (discardPileValue > highestDiscardPileValue) {
                 highestDiscardPileValue = discardPileValue;
