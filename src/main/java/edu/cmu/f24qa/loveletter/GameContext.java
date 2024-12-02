@@ -13,9 +13,13 @@ public class GameContext {
     private Scanner inputScanner;
     private @Nullable Player currentUser;
 
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP", 
+        justification = "Game-Specific Business Logic Requires Direct Reference"
+    )
     public GameContext(PlayerList players, Deck deck, Readable inputScanner) {
-        this.players = new PlayerList(players);
-        this.deck = new Deck(deck);
+        this.players = players;
+        this.deck = deck;
         this.inputScanner = new Scanner(inputScanner);
     }
 
