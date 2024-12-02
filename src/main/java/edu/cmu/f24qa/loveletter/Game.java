@@ -68,6 +68,11 @@ public class Game {
             System.out.print("Enter player name (empty when done): ");
             name = context.readLine();
         }
+        
+        int playerCount = this.players.getPlayers().size();
+        if (playerCount < 2 || playerCount > 4) {
+            throw new IllegalStateException("Invalid number of players. Only 2-4 players are allowed.");
+        }
     }
 
     /**

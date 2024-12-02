@@ -3,7 +3,7 @@ package edu.cmu.f24qa.loveletter;
 import java.util.List;
 import java.util.Stack;
 import java.lang.reflect.Field;
-
+import java.nio.charset.StandardCharsets;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -582,5 +582,32 @@ public class GameTest {
         assertEquals(1, kingCount, "Should have 1 KING card");
         assertEquals(1, countessCount, "Should have 1 COUNTESS card");
         assertEquals(1, princessCount, "Should have 1 PRINCESS card");
+    }
+    
+    /**
+     * Tests the promptForPlayers method with different scenarios.
+     * 
+     * Test cases:
+     * 1. Create a game with only one player throws an IllegalStateException
+     * 2. Create a game with three players succeeds and correctly initializes the player list
+     */
+    @Test
+    public void testPromptForPlayers() {
+        // Test case 1: One player (should throw exception)
+        String input1 = "Player1\n\n";
+        ByteArrayInputStream inputStream1 = new ByteArrayInputStream(input1.getBytes(StandardCharsets.UTF_8));
+        Game game1 = new Game(new PlayerList(), new Deck(), inputStream1);
+
+        assertThrows(IllegalStateException.class, () -> {
+            game1.promptForPlayers();
+        });
+
+        // Test case 2: Three players (should succeed)
+        String input2 = "Player1\nPlayer2\nPlayer3\n\n";
+        ByteArrayInputStream inputStream2 = new ByteArrayInputStream(input2.getBytes(StandardCharsets.UTF_8));
+        Game game2 = new Game(new PlayerList(), new Deck(), inputStream2);
+
+        game2.promptForPlayers();
+        assertEquals(3, game2.getPlayers().getPlayers().size());
     }
 }
