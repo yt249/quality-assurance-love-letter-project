@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class PlayerListTest {
@@ -14,7 +13,6 @@ public class PlayerListTest {
      * Verify that in a two-player game,
      * a player shall win the game after earning 7 Tokens of Affection.
      */
-    @Disabled("Incorrect getGameWinner implementation.")
     @Test
     void testGetGameWinnerForTwoPlayerGame() {
         PlayerList players = new PlayerList();
@@ -53,7 +51,6 @@ public class PlayerListTest {
      * Verify that in a four-player game,
      * a player shall win the game after earning 4 Tokens of Affection.
      */
-    @Disabled("Incorrect getGameWinner implementation.")
     @Test
     void testGetGameWinnerForFourPlayerGame() {
         PlayerList players = new PlayerList();
@@ -70,6 +67,21 @@ public class PlayerListTest {
 
         assertEquals(players.getPlayers().size(), 4);
         assertEquals(result.getName(), "winner");
+    }
+
+    /*
+     * Verify that getGameWinner should throw exception when there are not 2-4 players.
+     */
+    @Test
+    void testGetGameWinnerForInvalidNumberOfPlayers() {
+        PlayerList players = new PlayerList();
+        Player player = new Player("player", new Hand(), new DiscardPile(), false, 4);
+        players.addPlayer(player);
+
+        Exception exception = assertThrows(IllegalStateException.class, players::getGameWinner);
+
+        // Assert: Verify the exception message
+        assertEquals("Invalid number of players", exception.getMessage()); 
     }
 
     /*

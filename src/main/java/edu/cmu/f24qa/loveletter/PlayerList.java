@@ -121,8 +121,20 @@ public class PlayerList {
      * @return the game winner
      */
     public @Nullable Player getGameWinner() {
+        int playerCount = players.size();
+        int tokensToWin;
+        if (!(playerCount >= 2 && playerCount <= 4)) {
+            throw new IllegalStateException("Invalid number of players");
+        }
+        if (playerCount == 2) {
+            tokensToWin = 7;
+        } else if (playerCount == 3) {
+            tokensToWin = 5;
+        } else {
+            tokensToWin = 4;
+        }
         for (Player p : players) {
-            if (p.getTokens() == 5) {
+            if (p.getTokens() == tokensToWin) {
                 return p;
             }
         }
