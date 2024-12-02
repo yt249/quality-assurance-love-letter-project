@@ -1,7 +1,6 @@
 package edu.cmu.f24qa.loveletter;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Disabled;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.Stack;
@@ -120,49 +119,49 @@ public class GameE2ETest {
         new String[]{
             // ======== Round 2 ========
             // initial state:
-            // Alice: GUARD, Bob: GUARD, Charlie: GUARD, David: GUARD
+            // David: GUARD, Alice: GUARD, Bob: GUARD, Charlie: GUARD
 
             // ---- mini round 1 ----
-            // Alice: (GUARD), PRIEST, Bob: GUARD, Charlie: GUARD, David: GUARD
+            // David: (GUARD), PRIEST, Alice: GUARD, Bob: GUARD, Charlie: GUARD
+            "0",        // David plays Guard
+            "Priest",   // Guess Priest
+            "Alice",    // Target Alice (wrong)
+
+            // David: PRIEST, Alice: (GUARD), PRIEST, Bob: GUARD, Charlie: GUARD
             "0",        // Alice plays Guard
             "Priest",   // Guess Priest
             "Bob",      // Target Bob (wrong)
 
-            // Alice: PRIEST, Bob: (GUARD), PRIEST, Charlie: GUARD, David: GUARD
+            // David: PRIEST, Alice: PRIEST, Bob: (GUARD), BARON, Charlie: GUARD
             "0",        // Bob plays Guard
             "Guard",    // Guess Guard
             "Alice",    // Target Alice (wrong)
 
-            // Alice: PRIEST, Bob: PRIEST, Charlie: (GUARD), BARON, David: GUARD
+            // David: PRIEST, Alice: PRIEST, Bob: BARON, Charlie: (GUARD), BARON
             "0",        // Charlie plays Guard
             "Guard",    // Guess Guard
             "Alice",    // Target Alice (wrong)
 
-            // Alice: PRIEST, Bob: PRIEST, Charlie: BARON, David: (GUARD), BARON
-            "0",        // David plays Guard
-            "Guard",    // Guess Guard
-            "Alice",    // Target Alice (wrong)
-
             // ---- mini round 2 ----
-            // Alice: (PRIEST), HANDMAIDEN, Bob: PRIEST, Charlie: BARON, David: BARON
+            // David: (PRIEST), HANDMAIDEN, Alice: PRIEST, Bob: BARON, Charlie: BARON
+            "0",        // David plays Priest
+            "Bob",      // Target Bob
+
+            // David: HANDMAIDEN, Alice: (PRIEST), HANDMAIDEN, Bob: BARON, Charlie: BARON
             "0",        // Alice plays Priest
             "Bob",      // Target Bob
 
-            // Alice: HANDMAIDEN, Bob: (PRIEST), HANDMAIDEN, Charlie: BARON, David: BARON
-            "0",        // Bob plays Priest
-            "Charlie",  // Target Charlie
+            // David: HANDMAIDEN, Alice: HANDMAIDEN, Bob: BARON, (PRINCE), Charlie: BARON
+            "1",        // Bob plays Prince
+            "David",    // Target David (David discards HANDMAIDEN and gets PRINCESS)
 
-            // Alice: HANDMAIDEN, Bob: HANDMAIDEN, Charlie: BARON, (PRINCE), David: BARON
+            // David: PRINCESS, Alice: HANDMAIDEN, Bob: BARON, Charlie: BARON, (PRINCE)
             "1",        // Charlie plays Prince
-            "David",    // Target David (David discards BARON and gets PRINCE)
-
-            // Alice: HANDMAIDEN, Bob: HANDMAIDEN, Charlie: BARON, David: (PRINCE), PRINCESS
-            "0",        // David plays PRINCE
-            "Charlie",  // Target Charlie (Charlie discards BARON and gets KING)
+            "Alice",    // Target Alice (Alice discards HANDMAIDEN and gets KING)
 
             // ---- mini round 3 ----
-            // Alice: HANDMAIDEN, (COUNTESS), Bob: HANDMAIDEN, Charlie: KING, David: PRINCESS
-            "1",        // Alice plays Countess
+            // David: PRINCESS, (COUNTESS), Alice: HANDMAIDEN, Bob: BARON, Charlie: BARON
+            "1",        // David plays Countess
 
             // Deck is empty, round ends, David wins because Princess has the biggest value
         },
@@ -171,24 +170,24 @@ public class GameE2ETest {
             Card.GUARD,
 
             // initial cards
+            Card.GUARD,             // David's initial card
             Card.GUARD,             // Alice's initial card
             Card.GUARD,             // Bob's initial card
             Card.GUARD,             // Charlie's initial card
-            Card.GUARD,             // David's initial card
 
             // mini round 1
+            Card.PRIEST,            // David draws
             Card.PRIEST,            // Alice draws
-            Card.PRIEST,            // Bob draws
+            Card.BARON,             // Bob draws
             Card.BARON,             // Charlie draws
-            Card.BARON,             // David draws
 
             // mini round 2
+            Card.HANDMAIDEN,        // David draws
             Card.HANDMAIDEN,        // Alice draws
-            Card.HANDMAIDEN,        // Bob draws
+            Card.PRINCE,            // Bob draws
+            Card.PRINCESS,          // David draws by Bob's PRINCE
             Card.PRINCE,            // Charlie draws
-            Card.PRINCE,            // David draws by Charlie's PRINCE
-            Card.PRINCESS,          // David draws
-            Card.KING,              // Charlie draws by David's PRINCE
+            Card.KING,              // Alice draws by David's PRINCE
 
             // mini round 3
             Card.COUNTESS,          // Alice draws
@@ -199,48 +198,51 @@ public class GameE2ETest {
         new String[]{
             // ======== Round 3 ========
             // initial state:
-            // Alice: BARON, Bob: PRIEST, Charlie: PRIEST, David: COUNTESS
+            // David: COUNTESS, Alice: BARON, Bob: PRIEST, Charlie: PRIEST
 
             // ---- mini round 1 ----
-            // Alice: (BARON), GUARD, Bob: PRIEST, Charlie: PRIEST, David: COUNTESS
+            // David: (COUNTESS), KING, Alice: BARON, Bob: PRIEST, Charlie: PRIEST
+            // David plays Countess automatically
+
+            // David: KING, Alice: (BARON), GUARD, Bob: PRIEST, Charlie: PRIEST
             "0",        // Alice plays Baron
             "Bob",      // Target Bob (Alice loses and is eliminated)
 
-            // Bob: (PRIEST), PRINCE, Charlie: PRIEST, David: COUNTESS
+            // David: KING, Bob: (PRIEST), PRINCE, Charlie: PRIEST
             "0",        // Bob plays Priest
             "Charlie",  // Target Charlie
 
-            // Bob: PRINCE, Charlie: (PRIEST), PRINCE, David: COUNTESS
+            // David: KING, Bob: PRINCE, Charlie: (PRIEST), PRINCE
             "0",        // Charlie plays Priest
             "David",    // Target David
 
-            // Bob: PRINCE, Charlie: PRINCE, David: (COUNTESS), KING
-            // David plays Countess automatically
-
             // ---- mini round 2 ----
-            // Bob: (PRINCE), PRINCESS, Charlie: PRINCE, David: KING
-            "1",        // Bob plays Princess (Bob is eliminated)
+            // David: (KING), PRINCESS, Bob: PRINCE, Charlie: PRINCE
+            "0",        // David plays King
+            "Charlie",  // Target Charlie
 
-            // Charlie: (PRINCE), HANDMAIDEN, David: KING
-            "0",        // Charlie plays Prince
-            "David",    // Target David (David discards KING and gets HANDMAIDEN)
+            // David: PRINCE, Bob: PRINCE, (HANDMAIDEN), Charlie: PRINCESS
+            "1",        // Bob plays Handmaiden
 
-            // Charlie: HANDMAIDEN, David: (HANDMAIDEN), GUARD
-            "0",        // David plays Handmaiden
+            // David: PRINCE, Bob: PRINCE, Charlie: PRINCESS, (GUARD)
+            "1",        // Charlie plays Guard
+            "Guard",    // Guess Guard
+            "David",    // Target David (wrong)
 
             // ---- mini round 3 ----
-            // Charlie: (HANDMAIDEN), GUARD, David: GUARD
-            "0",        // Charlie plays Handmaiden
+            // David: (PRINCE), HANDMAIDEN, Bob: PRINCE, Charlie: PRINCESS
+            "0",        // David plays Prince
+            "Charlie",  // Target Charlie (Charlie discards PRINCESS and is eliminated)
 
-            // Charlie: GUARD, David: (GUARD), GUARD
-            "1",        // David plays Guard
-            "King",     // Guess King (Nothing happens because Charlie is protected)
+            // David: HANDMAIDEN, Bob: (PRINCE), GUARD
+            "0",        // Bob plays Prince
+            "David",    // Target David (David discards HANDMAIDEN and gets GUARD)
 
             // ---- mini round 4 ----
-            // Charlie: (GUARD), GUARD, David: GUARD
-            "0",        // Charlie plays Guard
+            // David: (GUARD), GUARD, Bob: GUARD
+            "0",        // David plays Guard
             "Priest",   // Guess Priest
-            "David",    // Target David (wrong)
+            "Bob",      // Target Bob (wrong)
 
             // Deck is empty, round ends, David wins because he has the highest value in discard pile
         },
@@ -249,29 +251,29 @@ public class GameE2ETest {
             Card.BARON,
 
             // initial cards
+            Card.COUNTESS,          // David's initial card
             Card.BARON,             // Alice's initial card
             Card.PRIEST,            // Bob's initial card
             Card.PRIEST,            // Charlie's initial card
-            Card.COUNTESS,          // David's initial card
 
             // mini round 1
+            Card.KING,              // David draws
             Card.GUARD,             // Alice draws
             Card.PRINCE,            // Bob draws
             Card.PRINCE,            // Charlie draws
-            Card.KING,              // David draws
 
             // mini round 2
-            Card.PRINCESS,         // Bob draws
-            Card.HANDMAIDEN,       // Charlie draws
-            Card.HANDMAIDEN,       // David draws by Charlie's PRINCE
-            Card.GUARD,            // David draws
+            Card.PRINCESS,          // David draws
+            Card.HANDMAIDEN,        // Bob draws
+            Card.GUARD,             // Charlie draws
 
             // mini round 3
-            Card.GUARD,            // Charlie draws
-            Card.GUARD,            // David draws
+            Card.HANDMAIDEN,        // David draws
+            Card.GUARD,             // Bob draws
+            Card.GUARD,             // David draws by Bob's PRINCE
 
             // mini round 4
-            Card.GUARD,            // Charlie draws
+            Card.GUARD,             // Charlie draws
         }
     );
 
@@ -279,30 +281,30 @@ public class GameE2ETest {
         new String[]{
             // ======== Round 4 ========
             // initial state:
-            // Alice: GUARD, Bob: GUARD, Charlie: PRINCESS, David: COUNTESS
+            // David: COUNTESS, Alice: GUARD, Bob: GUARD, Charlie: PRINCESS
 
             // ---- mini round 1 ----
-            // Alice: (GUARD), GUARD, Bob: GUARD, Charlie: PRINCESS, David: COUNTESS
-            "0",        // Alice plays Guard
+            // David: COUNTESS, (GUARD), Alice: GUARD, Bob: GUARD, Charlie: PRINCESS
+            "1",        // David plays Guard
             "Priest",   // Guess Priest
-            "Bob",      // Target Bob (wrong)
+            "Alice",    // Target Alice (wrong)
 
-            // Alice: GUARD, Bob: GUARD, (PRINCE), Charlie: PRINCESS, David: COUNTESS
+            // David: COUNTESS, Alice: GUARD, (PRIEST), Bob: GUARD, Charlie: PRINCESS
+            "1",        // Alice plays Priest
+            "Charlie",  // Target Charlie
+
+            // David: COUNTESS, Alice: GUARD, Bob: GUARD, (PRINCE) Charlie: PRINCESS
             "1",        // Bob plays Prince
             "Charlie",  // Target Charlie (Charlie discards PRINCESS and is eliminated)
 
-            // Alice: GUARD, Bob: GUARD, David: COUNTESS, (BARON)
+            // ---- mini round 2 ----
+            // DAVID: COUNTESS, (BARON), Alice: GUARD, Bob: GUARD
             "1",        // David plays Baron
             "Alice",    // Target Alice (Alice loses and is eliminated)
 
-            // ---- mini round 2 ----
-            // Bob: GUARD, (PRIEST), David: COUNTESS
-            "1",        // Bob plays Priest
-            "David",    // Target David
-
-            // Bob: GUARD, David: COUNTESS, (BARON)
-            "0",        // David plays Baron
-            "Bob",      // Target Bob (Bob loses and is eliminated)
+            // David: COUNTESS, Bob: GUARD, (BARON)
+            "1",        // Bob plays Baron
+            "David",    // Target David (Bob loses and is eliminated)
 
             // All players except David are eliminated, David wins
         },
@@ -311,25 +313,25 @@ public class GameE2ETest {
             Card.GUARD,
 
             // initial cards
+            Card.COUNTESS,          // David's initial card
             Card.GUARD,             // Alice's initial card
             Card.GUARD,             // Bob's initial card
             Card.PRINCESS,          // Charlie's initial card
-            Card.COUNTESS,          // David's initial card
 
             // mini round 1
-            Card.GUARD,             // Alice draws
+            Card.GUARD,             // David draws
+            Card.PRIEST,            // Alice draws
             Card.PRINCE,            // Bob draws
-            Card.BARON,             // David draws
 
             // mini round 2
-            Card.PRIEST,            // Bob draws
             Card.BARON,             // David draws
+            Card.BARON,             // Bob draws
         }
     );
 
     private static final GameScenario GAME_SCENARIO = new GameScenario(
         new String[]{"Alice", "Bob", "Charlie", "David"},
-        new RoundScenario[]{ROUND_1_SCENARIO, ROUND_1_SCENARIO, ROUND_4_SCENARIO, ROUND_3_SCENARIO}
+        new RoundScenario[]{ROUND_1_SCENARIO, ROUND_2_SCENARIO, ROUND_3_SCENARIO, ROUND_4_SCENARIO}
     );
 
     private class MockDeck extends Deck {
@@ -359,7 +361,7 @@ public class GameE2ETest {
     }
 
     @Test
-    public void testSingleRoundScenario() throws NoSuchFieldException, IllegalAccessException {
+    public void testWholeGameScenario() throws NoSuchFieldException, IllegalAccessException {
         // Setup game with scenario
         GameScenario scenario = GAME_SCENARIO;
         

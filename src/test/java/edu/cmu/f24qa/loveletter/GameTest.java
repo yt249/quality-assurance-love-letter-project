@@ -1,5 +1,7 @@
 package edu.cmu.f24qa.loveletter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.lang.reflect.Field;
@@ -223,39 +225,67 @@ public class GameTest {
     /**
      * Verifies that the winner of the previous round is the first player
      * to take a turn in the next round.
+     * 
+     * @throws SecurityException
+     * @throws NoSuchFieldException
      */
-    @Disabled("startRound is not correctly implemented")
     @Test
-    void testPreviousRoundWinnerGoesFirst() throws Exception {
+    void testPreviousRoundWinnerGoesFirst() throws NoSuchFieldException, IllegalAccessException {
         // Setup: Create a player list with two players
         PlayerList players = new PlayerList();
         Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
         Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
         players.addPlayer(player1);
         players.addPlayer(player2);
+        // add cards to players' hands
+        player1.getHand().add(Card.BARON);
+        player2.getHand().add(Card.GUARD);
 
-        // Simulate Player 1 as the round winner
-        player2.getHand().add(Card.GUARD); // Add a card to Player 1's hand
-        player1.getHand().clear();        // Ensure Player 2 has no cards
-        assertEquals(player2, players.getRoundWinner(), "Player 2 should be the round winner.");
+        PlayerList spyPlayers = spy(players);
+
+        // Mock the Deck
+        Deck mockDeck = mock(Deck.class);
+
+        // Mock the scenario where deck becomes empty after two turns
+        when(mockDeck.hasMoreCards()).thenReturn(true, true, false);
 
         // Create a game instance
-        Game game = spy(new Game(players, new Deck(), System.in));
+        Game game = new Game(null, null, new ByteArrayInputStream(new byte[0])); // Use a dummy deck for now
 
-        // Stub out methods that are not relevant to this test
-        doNothing().when(game).setupNewGame();  // Skip new game setup
-        doNothing().when(game).determineRoundWinner();  // Stub round winner determination
-        doNothing().when(game).executeTurn(any(Player.class));  // Stub turn execution
+        // Use reflection to inject the mocked deck and players
+        Field deckField = Game.class.getDeclaredField("deck");
+        deckField.setAccessible(true); // Allow access to the private field
+        deckField.set(game, mockDeck); // Inject the mocked deck into the game
+        Field playersField = Game.class.getDeclaredField("players");
+        playersField.setAccessible(true);
+        playersField.set(game, spyPlayers);
+        // simulate the second round of a game
+        Field roundField = Game.class.getDeclaredField("round");
+        roundField.setAccessible(true);
+        roundField.setInt(game, 1);
+        // Simulate Player 2 as the round winner of last round
+        Field lastRoundWinnerField = Game.class.getDeclaredField("lastRoundWinners");
+        lastRoundWinnerField.setAccessible(true);
+        lastRoundWinnerField.set(game, new ArrayList<>(Arrays.asList(player2)));
 
-        // Create an inOrder verifier for the game instance
-        InOrder inOrder = inOrder(game);
+        // Stub out irrelevant methods
+        Game spyGame = spy(game);
+        doNothing().when(spyGame).executeTurn(any(Player.class));
+        doNothing().when(spyGame).setupNewGame(); // Skip new game setup
+        doNothing().when(spyGame).determineRoundWinner(); // Skip round winner determination
+
+        // Verify the execution order of turns
+        InOrder inOrder = inOrder(spyGame);
 
         // Start the round
-        game.startRound();
-    
-        // Verify the order of execution for the players
-        inOrder.verify(game).executeTurn(player2); // Player 2 (round winner) goes first
-        inOrder.verify(game).executeTurn(player1); // Player 1 goes next
+        spyGame.startRound();
+
+        // Verify Player 2 (last round's winner) goes first, followed by Player 1
+        verify(mockDeck, times(3)).hasMoreCards();
+        verify(spyPlayers, times(3)).checkForRoundWinner();
+        verify(spyGame, times(2)).executeTurn(any(Player.class));
+        inOrder.verify(spyGame).executeTurn(player2); // Player 2 (round winner) goes first
+        inOrder.verify(spyGame).executeTurn(player1); // Player 1 goes next
     }
 
     /**
@@ -266,17 +296,17 @@ public class GameTest {
         // Create 2 players
         Player player1 = new Player("Player1", new Hand(), new DiscardPile(), false, 0);
         Player player2 = new Player("Player2", new Hand(), new DiscardPile(), false, 0);
-        
+
         // Create and populate PlayerList
         PlayerList players = new PlayerList();
         players.addPlayer(player1);
         players.addPlayer(player2);
-        
+
         // Create custom deck using Stack
         Stack<Card> cards = new Stack<>();
         cards.push(Card.HANDMAIDEN); // Will be drawn by Player 1
-        cards.push(Card.PRIEST);     // Player 2's initial card
-        cards.push(Card.GUARD);      // Player 1's initial card
+        cards.push(Card.PRIEST); // Player 2's initial card
+        cards.push(Card.GUARD); // Player 1's initial card
 
         // Create spy deck and set the custom deck
         Deck spyDeck = spy(new Deck());

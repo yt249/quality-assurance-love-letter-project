@@ -237,4 +237,14 @@ public class PlayerList {
     public void addPlayer(Player player) {
         players.addLast(player);
     }
+
+    /*
+     * Rotate the list so the winner becomes the first player
+     */
+    public void rotatePlayerList(Player lastRoundWinner) {
+        while (!players.getFirst().equals(lastRoundWinner)) {
+            Player movedPlayer = players.removeFirst();
+            players.addLast(movedPlayer);
+        }
+    }
 }

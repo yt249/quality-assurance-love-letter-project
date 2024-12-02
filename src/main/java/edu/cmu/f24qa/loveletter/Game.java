@@ -15,6 +15,7 @@ public class Game {
     private GameContext context;
     private ActionFactory actionFactory;
     private int round;
+    private List<Player> lastRoundWinners;
 
     public Game(PlayerList playerList, Deck deck, InputStream inputStream) {
         this.players = new PlayerList(playerList);
@@ -22,6 +23,7 @@ public class Game {
         this.context = new GameContext(players, deck, new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         this.actionFactory = new ActionFactory();
         this.round = 0;
+        this.lastRoundWinners = new ArrayList<>();
     }
 
     public Game(PlayerList playerList, Deck deck, InputStream inputStream, ActionFactory actionFactory) {
@@ -30,6 +32,7 @@ public class Game {
         this.context = new GameContext(players, deck, new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         this.actionFactory = actionFactory;
         this.round = 0;
+        this.lastRoundWinners = new ArrayList<>();
     }
 
     /**
@@ -60,6 +63,13 @@ public class Game {
         return round;
     }
 
+    /*
+     * Gets last round's winners.
+     */
+    public List<Player> getLastRoundWinners() {
+        return lastRoundWinners;
+    }
+
     public void promptForPlayers() {
         System.out.print("Enter player name (empty when done): ");
         String name = context.readLine();
@@ -74,7 +84,7 @@ public class Game {
             throw new IllegalStateException("Invalid number of players. Only 2-4 players are allowed.");
         }
     }
-
+    
     /**
      * The main game loop.
      */
@@ -87,6 +97,9 @@ public class Game {
     }
 
     public void startRound() {
+        if (round > 0) {
+            keepLastRoundWinnerFirst();
+        }
         setupNewGame();
         while (!players.checkForRoundWinner() && deck.hasMoreCards()) {
             Player turn = players.getCurrentPlayer();
@@ -155,6 +168,7 @@ public class Game {
     }
 
     public void determineRoundWinner() {
+        lastRoundWinners.clear();
         Player winner = null;
         List<Player> tiedWinners = new ArrayList<>();
         if (players.checkForRoundWinner()) {
@@ -172,10 +186,12 @@ public class Game {
         }
 
         if (winner != null) {
+            lastRoundWinners.add(winner);
             winner.addToken();
             System.out.println(winner.getName() + " has won this round!");
             players.print();
         } else if (!tiedWinners.isEmpty()) {
+            lastRoundWinners.addAll(tiedWinners);
             System.out.println("It's a tie! The following players have won this round:");
             for (Player player : tiedWinners) {
                 player.addToken();
@@ -229,6 +245,21 @@ public class Game {
 
         CardAction action = actionFactory.getAction(cardName);
         action.execute(context); // Execute the action with GameContext
+    }
+
+    /**
+    *  Ensure winner of last round is first in the player list 
+    *  - rotate the list so the order of players won't change 
+    */
+    private void keepLastRoundWinnerFirst() {
+        // Preserve the previous round winner and move them to the front
+        // if there's a tie in the last round, always pick the first player to start first
+        if (lastRoundWinners.isEmpty()) {
+            throw new IllegalStateException("There is no winner in the last round");
+        }
+        Player roundWinner = lastRoundWinners.get(0);
+        // Rotate the list so the winner becomes the first player
+        players.rotatePlayerList(roundWinner);
     }
 
 }
