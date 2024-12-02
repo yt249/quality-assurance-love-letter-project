@@ -9,12 +9,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -212,6 +216,44 @@ public class GameTest {
         assertEquals(0, player1.getTokens(), "Player 1 should not win the round.");
         assertEquals(1, player2.getTokens(), "Player 2 should win the round with the Princess card.");
         assertTrue(outContent.toString().contains("Player 2 has won this round!"));
+    }
+
+    /**
+     * Verifies that the winner of the previous round is the first player
+     * to take a turn in the next round.
+     */
+    @Disabled("startRound is not correctly implemented")
+    @Test
+    void testPreviousRoundWinnerGoesFirst() throws Exception {
+        // Setup: Create a player list with two players
+        PlayerList players = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+        players.addPlayer(player1);
+        players.addPlayer(player2);
+
+        // Simulate Player 1 as the round winner
+        player2.getHand().add(Card.GUARD); // Add a card to Player 1's hand
+        player1.getHand().clear();        // Ensure Player 2 has no cards
+        assertEquals(player2, players.getRoundWinner(), "Player 2 should be the round winner.");
+
+        // Create a game instance
+        Game game = spy(new Game(players, new Deck(), System.in));
+
+        // Stub out methods that are not relevant to this test
+        doNothing().when(game).setupNewGame();  // Skip new game setup
+        doNothing().when(game).determineRoundWinner();  // Stub round winner determination
+        doNothing().when(game).executeTurn(any(Player.class));  // Stub turn execution
+
+        // Create an inOrder verifier for the game instance
+        InOrder inOrder = inOrder(game);
+
+        // Start the round
+        game.startRound();
+    
+        // Verify the order of execution for the players
+        inOrder.verify(game).executeTurn(player2); // Player 2 (round winner) goes first
+        inOrder.verify(game).executeTurn(player1); // Player 1 goes next
     }
 
     /**
