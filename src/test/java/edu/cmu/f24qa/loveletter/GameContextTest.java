@@ -16,8 +16,14 @@ class GameContextTest {
 
     @BeforeEach
     void setUp() {
+        // Set up game with 2 players each having one card in their hands
         players = new PlayerList();
-        players.addPlayer("Watson");  // Add Watson as a real player
+        Player player1 = new Player("Watson", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Sarah", new Hand(), new DiscardPile(), false, 0);
+        player1.addCard(Card.BARON);
+        player2.addCard(Card.COUNTESS);
+        players.addPlayer(player1);
+        players.addPlayer(player2);
     
         String simulatedInput = "NonExistent\nWatson\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes(StandardCharsets.UTF_8));
