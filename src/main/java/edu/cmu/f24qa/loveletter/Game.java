@@ -8,6 +8,7 @@ import java.util.List;
 
 import edu.cmu.f24qa.loveletter.actions.ActionFactory;
 import edu.cmu.f24qa.loveletter.actions.CardAction;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class Game {
     private PlayerList players;
@@ -63,6 +64,10 @@ public class Game {
         return round;
     }
 
+    @SuppressFBWarnings(
+        value = "EI_EXPOSE_REP", 
+        justification = "Game-Specific Business Logic Requires Direct Reference"
+    )
     /*
      * Gets last round's winners.
      */

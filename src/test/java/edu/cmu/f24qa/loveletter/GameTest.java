@@ -2,6 +2,7 @@ package edu.cmu.f24qa.loveletter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 import java.lang.reflect.Field;
@@ -673,7 +674,7 @@ public class GameTest {
         assertEquals(1, countessCount, "Should have 1 COUNTESS card");
         assertEquals(1, princessCount, "Should have 1 PRINCESS card");
     }
-    
+
     /**
      * Tests the promptForPlayers method with different scenarios.
      * 
@@ -700,4 +701,81 @@ public class GameTest {
         game2.promptForPlayers();
         assertEquals(3, game2.getPlayers().getPlayers().size());
     }
+
+    /**
+     * Verifies that in case of a tie, players sum the values of their discard piles
+     * to determine the winner; if a tie persists, all tied players are considered winners.
+     */
+    @Test
+    void testDetermineRoundWinnerWithDifferentDiscardedPileValues() 
+            throws NoSuchFieldException, IllegalAccessException {
+        // Setup: Create a player list with two players
+        PlayerList players = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+        players.addPlayer(player1);
+        players.addPlayer(player2);
+    
+        // Add identical cards to players' hands to simulate a tie on hand comparison
+        player1.getHand().add(Card.GUARD);
+        player2.getHand().add(Card.GUARD);
+
+        // Tiebreaker resolved with different discard pile values
+        player1.addCardToDiscarded(Card.KING); // Higher discard pile value
+        player2.addCardToDiscarded(Card.PRINCE);
+        
+        Game game = new Game(null, null, new ByteArrayInputStream(new byte[0]));
+
+        // Inject the mocked players
+        Field playersField = Game.class.getDeclaredField("players");
+        playersField.setAccessible(true);
+        playersField.set(game, players);
+
+        // Execute the method under test
+        game.determineRoundWinner();
+
+        // Verify the correct winner is returned by getLastRoundWinners
+        List<Player> lastRoundWinners = game.getLastRoundWinners();
+        assertEquals(1, lastRoundWinners.size()); // Verify only one winner
+        assertEquals(player1, lastRoundWinners.get(0)); // Verify Player 1 is the winner
+    } 
+
+    /**
+     * Verifies that in case of a tie, players sum the values of their discard piles
+     * to determine the winner; if a tie persists, all tied players are considered winners.
+     */
+    @Test
+    void testDetermineRoundWinnerWithIdenticalDiscardedPileValues() 
+            throws NoSuchFieldException, IllegalAccessException {
+        // Setup: Create a player list with two players
+        PlayerList players = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+        players.addPlayer(player1);
+        players.addPlayer(player2);
+    
+        // Add identical cards to players' hands to simulate a tie on hand comparison
+        player1.getHand().add(Card.GUARD);
+        player2.getHand().add(Card.GUARD);
+
+        // Tiebreaker unresolved with identical discard pile values
+        player1.addCardToDiscarded(Card.PRINCE); // Same discard pile value
+        player2.addCardToDiscarded(Card.PRINCE);
+
+        Game game = new Game(null, null, new ByteArrayInputStream(new byte[0]));
+        
+        // Inject the mocked players
+        Field playersField = Game.class.getDeclaredField("players");
+        playersField.setAccessible(true);
+        playersField.set(game, players);
+
+        // Execute the method under test
+        game.determineRoundWinner();
+
+        // Verify all players are considered winners
+        List<Player> lastRoundWinners = game.getLastRoundWinners();
+        assertEquals(2, lastRoundWinners.size()); // Verify two winners
+        assertTrue(lastRoundWinners.contains(player1)); // Verify Player 1 is a winner
+        assertTrue(lastRoundWinners.contains(player2)); // Verify Player 2 is a winner
+    } 
 }
