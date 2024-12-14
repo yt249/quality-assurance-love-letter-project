@@ -2,7 +2,6 @@ package edu.cmu.f24qa.loveletter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 import java.lang.reflect.Field;
@@ -10,20 +9,24 @@ import java.nio.charset.StandardCharsets;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.StringReader;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.MockedConstruction;
+
+import edu.cmu.f24qa.loveletter.actions.JesterAction;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -47,7 +50,7 @@ public class GameTest {
         doReturn(player1).when(spyPlayers).getCurrentPlayer();
 
         doReturn(false, false, true).when(spyPlayers).checkForRoundWinner(); // Simulate only one player has cards after 2 turns
-        doReturn(null, player1).when(spyPlayers).getGameWinner(); // No game winner initially
+        doReturn(new ArrayList<>()).when(spyPlayers).getGameWinner(); // No game winner initially
 
         Game game = new Game(null, null, new ByteArrayInputStream(new byte[0]));
         Field deckField = Game.class.getDeclaredField("deck");
@@ -87,7 +90,7 @@ public class GameTest {
         players.addPlayer(mockPlayer); 
         PlayerList spyPlayers = spy(players);
         doReturn(false).when(spyPlayers).checkForRoundWinner();  // Simulate no winner during the round
-        doReturn(null, mockPlayer).when(spyPlayers).getGameWinner();  // Return null for game winner initially
+        doReturn(new ArrayList<>()).when(spyPlayers).getGameWinner();  // Return null for game winner initially
         doReturn(mockPlayer).when(spyPlayers).getCurrentPlayer();  // Always return the mocked player as the current player
 
         // Create a Game instance
@@ -117,18 +120,19 @@ public class GameTest {
   
     /**
      * Tests that the deck is initialized with the correct number of each card type
-     * according to Love Letter game rules:
+     * according to Love Letter game rules for 2-4 players:
      * - 5 Guard cards
      * - 2 each of Priest, Baron, Handmaiden, and Prince
      * - 1 each of King, Countess, and Princess
      * Total deck size should be 16 cards.
      */
     @Test
-    void testInitializeDeckContainsCorrectCards() {
-        
+    void testInitializeDeckContainsCorrect16Cards() {
+        // Create a new deck
         Deck deck = new Deck();
-        deck.build();
+        deck.build16Cards();
         
+        // Get the deck
         Stack<Card> cards = deck.getDeck();
         
         // Count occurrences of each card type
@@ -143,14 +147,15 @@ public class GameTest {
         
         for (Card card : cards) {
             switch (card) {
-                case GUARD -> guardCount++;
-                case PRIEST -> priestCount++;
-                case BARON -> baronCount++;
-                case HANDMAIDEN -> handmaidenCount++;
-                case PRINCE -> princeCount++;
-                case KING -> kingCount++;
-                case COUNTESS -> countessCount++;
-                case PRINCESS -> princessCount++;
+                case GUARD : guardCount++; break;
+                case PRIEST : priestCount++; break;
+                case BARON : baronCount++; break;
+                case HANDMAIDEN : handmaidenCount++; break;
+                case PRINCE : princeCount++; break;
+                case KING : kingCount++; break;
+                case COUNTESS : countessCount++; break;
+                case PRINCESS : princessCount++; break;
+                default: break;
             }
         }
         
@@ -169,6 +174,88 @@ public class GameTest {
     }
 
     /**
+     * Tests that the deck is initialized with the correct number of each card type
+     * according to Love Letter game rules for 5-8 players:
+     * - 8 Guard cards
+     * - 2 each of Priest, Baron, Handmaiden, Prince, Cardinal, Baroness, Sycophant, and Count
+     * - 1 each of King, Countess, Princess, Jester, Assassin, Constable, Queen, and Bishop
+     * Total deck size should be 32 cards.
+     */
+    @Test
+    void testInitializeDeckContainsCorrect32Cards() {
+        // Create a new deck
+        Deck deck = new Deck();
+        deck.build32Cards();
+        
+        // Get the deck
+        Stack<Card> cards = deck.getDeck();
+        
+        // Count occurrences of each card type
+        int guardCount = 0;
+        int priestCount = 0;
+        int baronCount = 0;
+        int handmaidenCount = 0;
+        int princeCount = 0;
+        int cardinalCount = 0;
+        int baronessCount = 0;
+        int sycophantCount = 0;
+        int countCount = 0;
+        int kingCount = 0;
+        int countessCount = 0;
+        int princessCount = 0;
+        int jesterCount = 0;
+        int assassinCount = 0;
+        int constableCount = 0;
+        int queenCount = 0;
+        int bishopCount = 0;
+        
+        for (Card card : cards) {
+            switch (card) {
+                case GUARD : guardCount++; break;
+                case PRIEST : priestCount++; break;
+                case BARON : baronCount++; break;
+                case HANDMAIDEN : handmaidenCount++; break;
+                case PRINCE : princeCount++; break;
+                case CARDINAL : cardinalCount++; break;
+                case BARONESS : baronessCount++; break;
+                case SYCOPHANT : sycophantCount++; break;
+                case COUNT : countCount++; break;
+                case KING : kingCount++; break;
+                case COUNTESS : countessCount++; break;
+                case PRINCESS : princessCount++; break;
+                case JESTER : jesterCount++; break;
+                case ASSASSIN : assassinCount++; break;
+                case CONSTABLE : constableCount++; break;
+                case QUEEN : queenCount++; break;
+                case BISHOP : bishopCount++; break;
+                default: break;
+            }
+        }
+        
+        // Verify correct number of each card
+        assertEquals(8, guardCount, "Should have 8 Guard cards");
+        assertEquals(2, priestCount, "Should have 2 Priest cards");
+        assertEquals(2, baronCount, "Should have 2 Baron cards");
+        assertEquals(2, handmaidenCount, "Should have 2 Handmaiden cards");
+        assertEquals(2, princeCount, "Should have 2 Prince cards");
+        assertEquals(2, cardinalCount, "Should have 2 Cardinal cards");
+        assertEquals(2, baronessCount, "Should have 2 Baroness cards");
+        assertEquals(2, sycophantCount, "Should have 2 Sycophant cards");
+        assertEquals(2, countCount, "Should have 2 Count cards");
+        assertEquals(1, kingCount, "Should have 1 King card");
+        assertEquals(1, countessCount, "Should have 1 Countess card");
+        assertEquals(1, princessCount, "Should have 1 Princess card");
+        assertEquals(1, jesterCount, "Should have 1 Jester card");
+        assertEquals(1, assassinCount, "Should have 1 Assassin card");
+        assertEquals(1, constableCount, "Should have 1 Constable card");
+        assertEquals(1, queenCount, "Should have 1 Queen card");
+        assertEquals(1, bishopCount, "Should have 1 Bishop card");
+        
+        // Verify total deck size
+        assertEquals(32, cards.size(), "Deck should contain 32 cards total");
+    }
+
+    /**
      * Verifies that the shuffle method is called exactly once when initializing
      * the deck. Uses reflection to inject a spy deck to track the method call,
      * ensuring the deck is properly shuffled during game setup.
@@ -180,17 +267,24 @@ public class GameTest {
     void testInitializeDeckCallsShuffle() throws NoSuchFieldException, IllegalAccessException {
         // Create a spy deck to verify the shuffle method is called
         Deck spyDeck = spy(new Deck());
+
+        // Create a player list with two players
+        PlayerList players = new PlayerList();
+        Player player1 = new Player("Player 1", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Player 2", new Hand(), new DiscardPile(), false, 0);
+        players.addPlayer(player1);
+        players.addPlayer(player2);
         
         // Create game with any deck (it will be replaced)
-        Game game = new Game(new PlayerList(), new Deck(), System.in);
-        
+        Game game = new Game(players, spyDeck, System.in);
+
         // Use reflection to set our spy deck
         Field deckField = Game.class.getDeclaredField("deck");
         deckField.setAccessible(true);
         deckField.set(game, spyDeck);
-        
+
         // Call initializeDeck
-        game.initializeDeck();
+        game.setupNewGame();
         
         // Verify that shuffle was called
         verify(spyDeck, times(1)).shuffle();
@@ -380,7 +474,7 @@ public class GameTest {
 
         // Verify console output
         String output = outputStream.toString();
-        assertTrue(output.contains("All opponents are protected. Move to the next player."), 
+        assertTrue(output.contains("Not enough available players can be selected to satisfy the requirement of targeting at least 1 player(s)."), 
             "Should show message about all opponents being protected");
 
         // Verify that the card was discarded
@@ -396,284 +490,6 @@ public class GameTest {
         // Verify that peek() was never called on Player 2's hand
         verify(player2Hand, never()).peek(anyInt());
     } 
-
-    /**
-     * Tests the behavior of the game when the number of players is 2
-     * 
-     * Verifies that:
-     *  - The deck size is reduced by 4 (1 hidden card and 3 face-up cards)
-     *  - Console output logs the 3 face-up cards as removed
-     *  - The remaining cards in the deck are the correct counts for each card
-     */
-    @Test
-    void testDeckSizeStartWithTwoPlayers() throws NoSuchFieldException, IllegalAccessException{
-        // Redirect System.out to capture console output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Game with 2 players
-        PlayerList playerList = new PlayerList();
-        playerList.addPlayer("Player 1");
-        playerList.addPlayer("Player 2");
-
-        // Create a custom deck with cards in specific order
-        Stack<Card> customDeck = new Stack<>();
-        Card[] cards = {
-            Card.PRINCESS, Card.COUNTESS, Card.KING, Card.PRINCE,
-            Card.PRINCE, Card.HANDMAIDEN, Card.BARON, Card.PRIEST,
-            Card.GUARD, Card.GUARD, Card.GUARD, Card.GUARD,
-            Card.HANDMAIDEN, Card.BARON, Card.PRIEST, Card.GUARD
-        };
-        for (Card card : cards) {
-            customDeck.push(card);
-        }
-
-        // Create spy deck and set the custom deck
-        Deck spyDeck = spy(new Deck());
-        spyDeck.setDeck(customDeck);
-
-        // Create game with spy deck
-        Game game = new Game(playerList, spyDeck, System.in);
-
-        // Use reflection to set our spy deck
-        Field deckField = Game.class.getDeclaredField("deck");
-        deckField.setAccessible(true);
-        deckField.set(game, spyDeck);
-
-        // Get initial deck card size 
-        int initialDeckSize = spyDeck.getDeck().size();
-
-        // Removing cards from deck by system settings
-        game.removeCardFromDeck();
-
-        // Verify draw() was called exactly 4 times (1 hidden + 3 face-up)
-        verify(spyDeck, times(4)).draw();
-
-        // Verify console output contains the specific removed cards in order
-        String output = outContent.toString();
-        assertTrue(output.contains("Priest (2) was removed from the deck."), "First face-up card should be PRIEST");
-        assertTrue(output.contains("Baron (3) was removed from the deck."), "Second face-up card should be BARON");
-        assertTrue(output.contains("Handmaiden (4) was removed from the deck."), "Third face-up card should be HANDMAIDEN");
-
-        // Verify hidden card is not logged
-        assertFalse(output.contains("Guard (1) was removed from the deck."), "Hidden card should not be logged");
-
-        // Get the remaining cards in the deck
-        List<Card> remainingCards = spyDeck.getDeck();
-
-        // Verify deck has 12 cards
-        assertEquals(initialDeckSize - 4, remainingCards.size(), "Deck should have 12 cards remaining");
-
-        // Count cards in a simpler way
-        int guardCount = 0, priestCount = 0, baronCount = 0, handmaidenCount = 0;
-        int princeCount = 0, kingCount = 0, countessCount = 0, princessCount = 0;
-
-        for (Card card : remainingCards) {
-            switch (card) {
-                case GUARD: guardCount++; break;
-                case PRIEST: priestCount++; break;
-                case BARON: baronCount++; break;
-                case HANDMAIDEN: handmaidenCount++; break;
-                case PRINCE: princeCount++; break;
-                case KING: kingCount++; break;
-                case COUNTESS: countessCount++; break;
-                case PRINCESS: princessCount++; break;
-            }
-        }
-
-        // Verify the remaining card counts
-        assertEquals(4, guardCount, "Should have 4 GUARD cards");
-        assertEquals(1, priestCount, "Should have 1 PRIEST card");
-        assertEquals(1, baronCount, "Should have 1 BARON card");
-        assertEquals(1, handmaidenCount, "Should have 1 HANDMAIDEN card");
-        assertEquals(2, princeCount, "Should have 2 PRINCE cards");
-        assertEquals(1, kingCount, "Should have 1 KING card");
-        assertEquals(1, countessCount, "Should have 1 COUNTESS card");
-        assertEquals(1, princessCount, "Should have 1 PRINCESS card");
-    }
-
-    /**
-     * Tests the behavior of the game when the number of players is 3
-     * 
-     * Verifies that:
-     *  - The deck size is reduced by 1 (only 1 hidden card)
-     *  - No face-up cards are logged to the console
-     *  - The remaining cards in the deck are the correct counts for each card
-     */
-    @Test
-    void testDeckSizeStartWithThreePlayers() throws NoSuchFieldException, IllegalAccessException{
-        // Redirect System.out to capture console output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Game with 3 players
-        PlayerList playerList = new PlayerList();
-        playerList.addPlayer("Player 1");
-        playerList.addPlayer("Player 2");
-        playerList.addPlayer("Player 3");
-
-        // Create a custom deck with cards in specific order
-        Stack<Card> customDeck = new Stack<>();
-        Card[] cards = {
-            Card.PRINCESS, Card.COUNTESS, Card.KING, Card.PRINCE,
-            Card.PRINCE, Card.HANDMAIDEN, Card.BARON, Card.PRIEST,
-            Card.GUARD, Card.GUARD, Card.GUARD, Card.GUARD,
-            Card.HANDMAIDEN, Card.BARON, Card.PRIEST, Card.GUARD
-        };
-        for (Card card : cards) {
-            customDeck.push(card);
-        }
-
-        // Create spy deck and set the custom deck
-        Deck spyDeck = spy(new Deck());
-        spyDeck.setDeck(customDeck);
-
-        // Create game with spy deck
-        Game game = new Game(playerList, spyDeck, System.in);
-
-        // Use reflection to set our spy deck
-        Field deckField = Game.class.getDeclaredField("deck");
-        deckField.setAccessible(true);
-        deckField.set(game, spyDeck);
-
-        // Get initial deck card size 
-        int initialDeckSize = spyDeck.getDeck().size();
-
-        // Removing cards from deck by system settings
-        game.removeCardFromDeck();
-
-        // Verify draw() was called exactly 1 times
-        verify(spyDeck, times(1)).draw();
-
-        // Verify hidden card is not logged
-        String output = outContent.toString();
-        assertFalse(output.contains("Guard (1) was removed from the deck."), "Hidden card should not be logged");
-
-        // Get the remaining cards in the deck
-        List<Card> remainingCards = spyDeck.getDeck();
-
-        // Verify deck has 15 cards
-        assertEquals(initialDeckSize - 1, remainingCards.size(), "Deck should have 15 cards remaining");
-
-        // Count cards in a simpler way
-        int guardCount = 0, priestCount = 0, baronCount = 0, handmaidenCount = 0;
-        int princeCount = 0, kingCount = 0, countessCount = 0, princessCount = 0;
-
-        for (Card card : remainingCards) {
-            switch (card) {
-                case GUARD: guardCount++; break;
-                case PRIEST: priestCount++; break;
-                case BARON: baronCount++; break;
-                case HANDMAIDEN: handmaidenCount++; break;
-                case PRINCE: princeCount++; break;
-                case KING: kingCount++; break;
-                case COUNTESS: countessCount++; break;
-                case PRINCESS: princessCount++; break;
-            }
-        }
-
-        // Verify the remaining card counts
-        assertEquals(4, guardCount, "Should have 4 GUARD cards");
-        assertEquals(2, priestCount, "Should have 1 PRIEST card");
-        assertEquals(2, baronCount, "Should have 1 BARON card");
-        assertEquals(2, handmaidenCount, "Should have 1 HANDMAIDEN card");
-        assertEquals(2, princeCount, "Should have 2 PRINCE cards");
-        assertEquals(1, kingCount, "Should have 1 KING card");
-        assertEquals(1, countessCount, "Should have 1 COUNTESS card");
-        assertEquals(1, princessCount, "Should have 1 PRINCESS card");
-    }
-
-    /**
-     * Tests the behavior of the game when the number of players is 4
-     * 
-     * Verifies that:
-     *  - The deck size is reduced by 1 (only 1 hidden card)
-     *  - No face-up cards are logged to the console
-     *  - The remaining cards in the deck are the correct counts for each card
-     */
-    @Test
-    void testDeckSizeStartWithFourPlayers() throws NoSuchFieldException, IllegalAccessException{
-        // Redirect System.out to capture console output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-
-        // Game with 4 players
-        PlayerList playerList = new PlayerList();
-        playerList.addPlayer("Player 1");
-        playerList.addPlayer("Player 2");
-        playerList.addPlayer("Player 3");
-        playerList.addPlayer("Player 4");
-
-        // Create a custom deck with cards in specific order
-        Stack<Card> customDeck = new Stack<>();
-        Card[] cards = {
-            Card.PRINCESS, Card.COUNTESS, Card.KING, Card.PRINCE,
-            Card.PRINCE, Card.HANDMAIDEN, Card.BARON, Card.PRIEST,
-            Card.GUARD, Card.GUARD, Card.GUARD, Card.GUARD,
-            Card.HANDMAIDEN, Card.BARON, Card.PRIEST, Card.GUARD
-        };
-        for (Card card : cards) {
-            customDeck.push(card);
-        }
-
-        // Create spy deck and set the custom deck
-        Deck spyDeck = spy(new Deck());
-        spyDeck.setDeck(customDeck);
-
-        // Create game with spy deck
-        Game game = new Game(playerList, spyDeck, System.in);
-
-        // Use reflection to set our spy deck
-        Field deckField = Game.class.getDeclaredField("deck");
-        deckField.setAccessible(true);
-        deckField.set(game, spyDeck);
-
-        // Get initial deck card size 
-        int initialDeckSize = spyDeck.getDeck().size();
-
-        // Removing cards from deck by system settings
-        game.removeCardFromDeck();
-
-        // Verify draw() was called exactly 1 times
-        verify(spyDeck, times(1)).draw();
-
-        // Verify hidden card is not logged
-        String output = outContent.toString();
-        assertFalse(output.contains("Guard (1) was removed from the deck."), "Hidden card should not be logged");
-
-        // Get the remaining cards in the deck
-        List<Card> remainingCards = spyDeck.getDeck();
-
-        // Verify deck has 15 cards
-        assertEquals(initialDeckSize - 1, remainingCards.size(), "Deck should have 15 cards remaining");
-
-        // Count cards in a simpler way
-        int guardCount = 0, priestCount = 0, baronCount = 0, handmaidenCount = 0;
-        int princeCount = 0, kingCount = 0, countessCount = 0, princessCount = 0;
-
-        for (Card card : remainingCards) {
-            switch (card) {
-                case GUARD: guardCount++; break;
-                case PRIEST: priestCount++; break;
-                case BARON: baronCount++; break;
-                case HANDMAIDEN: handmaidenCount++; break;
-                case PRINCE: princeCount++; break;
-                case KING: kingCount++; break;
-                case COUNTESS: countessCount++; break;
-                case PRINCESS: princessCount++; break;
-            }
-        }
-
-        // Verify the remaining card counts
-        assertEquals(4, guardCount, "Should have 4 GUARD cards");
-        assertEquals(2, priestCount, "Should have 1 PRIEST card");
-        assertEquals(2, baronCount, "Should have 1 BARON card");
-        assertEquals(2, handmaidenCount, "Should have 1 HANDMAIDEN card");
-        assertEquals(2, princeCount, "Should have 2 PRINCE cards");
-        assertEquals(1, kingCount, "Should have 1 KING card");
-        assertEquals(1, countessCount, "Should have 1 COUNTESS card");
-        assertEquals(1, princessCount, "Should have 1 PRINCESS card");
-    }
 
     /**
      * Tests the promptForPlayers method with different scenarios.
@@ -778,4 +594,309 @@ public class GameTest {
         assertTrue(lastRoundWinners.contains(player1)); // Verify Player 1 is a winner
         assertTrue(lastRoundWinners.contains(player2)); // Verify Player 2 is a winner
     } 
+
+    /**
+     * Tests that a token is added to the player if the guess is correct.
+     *
+     * Tests that the Sycophant's effect is properly reset after the next player's turn.
+     * 
+     * Test sequence:
+     * 1. Player 1 (Alice) plays Sycophant and selects a target
+     * 2. Player 2 (Bob) plays their turn with a Guard card
+     * 3. Verify the Sycophant's forced target is reset to null
+     */
+    @Test
+    void testSycophantForcedPlayerResetAfterNextPlayerCard() throws NoSuchFieldException, IllegalAccessException {
+        // Setup players
+        PlayerList players = new PlayerList();
+        Player player1 = new Player("Alice", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+        players.addPlayer(player1);
+        players.addPlayer(player2);
+        
+        // Simulate input for both players' turns
+        // Player 1: "0" to select Sycophant, "Bob" to select Bob as target
+        // Player 2: "0" to select Handmaiden
+        String simulatedInput = "0\nBob\n0\n";
+        Readable inputReader = new StringReader(simulatedInput);
+        GameContext context = new GameContext(players, new Deck(), inputReader);
+        GameContext spyContext = spy(context);
+        
+        // Create game and inject context using reflection
+        Game game = new Game(players, new Deck(), System.in);
+        Field contextField = Game.class.getDeclaredField("context");
+        contextField.setAccessible(true);
+        contextField.set(game, spyContext);
+        
+        // Add Sycophant to player1's hand and Handmaiden to player2's hand
+        player1.addCard(Card.SYCOPHANT);
+        player2.addCard(Card.HANDMAIDEN);
+        
+        // Set player1 as current player and play Sycophant
+        when(spyContext.getCurrentUser()).thenReturn(player1);
+        game.playTurnCard(player1);
+        
+        // Verify Sycophant effect was set
+        verify(spyContext).setSycophantForcedPlayer(any(Player.class));
+        
+        // Now player2 plays their Guard card
+        when(spyContext.getCurrentUser()).thenReturn(player2);
+        game.playTurnCard(player2);
+        
+        // Verify Sycophant effect was reset
+        verify(spyContext, times(1)).resetSycophantForcedPlayer();
+    }
+  
+    @Test
+    /**
+     * Tests that a token is added to the player if the Jester's guess is correct.
+     *
+     * This test simulates a scenario where a player uses the Jester card to guess
+     * another player's card. If the guess is correct, the player should receive an
+     * additional token. The test verifies that the correct player is identified as
+     * the guessed player and that the Jester player receives the token.
+     */
+    void testDetermineRoundWinnerTokenAddedIfJesterGuessCorrect() {
+        Player player = new Player("Player1", new Hand(), new DiscardPile(), false, 0);
+        Player opponent = new Player("Opponent", new Hand(), new DiscardPile(), false, 0);
+
+        player.addCard(Card.GUARD);
+        opponent.addCard(Card.PRINCESS);
+
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer(player);
+        playerList.addPlayer(opponent);
+
+        Game game = new Game(playerList, new Deck(), new ByteArrayInputStream(new byte[0]));
+     
+        // Simulate JesterAction execution
+        GameContext context = spy(new GameContext(playerList, new Deck(), new InputStreamReader(new ByteArrayInputStream(new byte[0]))));
+
+        // Use reflection to set the private context and playerList fields
+        try {
+            Field contextField = Game.class.getDeclaredField("context");
+            contextField.setAccessible(true);
+            contextField.set(game, context);
+
+            Field playerListField = Game.class.getDeclaredField("players");
+            playerListField.setAccessible(true);
+            playerListField.set(game, playerList);
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        // Mock context behavior
+        doReturn(player).when(context).getCurrentUser();
+        doReturn(Arrays.asList(opponent)).when(context).selectOpponents(1,1,true);
+   
+        JesterAction action = new JesterAction();
+        action.execute(context);
+
+        // Simulate the correct guess scenario
+        game.determineRoundWinner();
+
+        // Verify that the guessed player and jester player are set correctly
+        assertEquals(opponent, context.getGuessedPlayer());
+        assertEquals(player, context.getJesterPlayer());
+
+        // Verify that an extra token is added to the player if the guess is correct
+        assertEquals(1, player.getTokens());
+    }
+
+    @Test
+    void testStartRoundExitsWhenPlayerWinsGame() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException {
+        // Setup
+        PlayerList playerList = new PlayerList();
+        Deck deck = mock(Deck.class);
+        // Input for Bishop action: select Bob, guess 1
+        String simulatedInput = "1\nBob\n";
+        InputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes());
+        
+        // Add players with initial cards and tokens
+        Player player1 = new Player("Alice", new Hand(), new DiscardPile(), false, 3); // 3 tokens, needs 1 more to win
+        Player player2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+        Player player3 = new Player("Susan", new Hand(), new DiscardPile(), false, 0);
+        Player player4 = new Player("Tom", new Hand(), new DiscardPile(), false, 0);
+        Player player5 = new Player("John", new Hand(), new DiscardPile(), false, 0);
+        player1.addCard(Card.BISHOP);  // Alice has Bishop to make a guess
+        player2.addCard(Card.GUARD);   // Bob has Guard that Alice will guess
+        player3.addCard(Card.GUARD);
+        player4.addCard(Card.GUARD);
+        player5.addCard(Card.GUARD);
+        playerList.addPlayer(player1);
+        playerList.addPlayer(player2);
+        playerList.addPlayer(player3);
+        playerList.addPlayer(player4);
+        playerList.addPlayer(player5);
+        
+        // Mock deck behavior
+        when(deck.hasMoreCards()).thenReturn(true); // Ensure loop continues
+        
+        // Mock player list behavior
+        PlayerList spyPlayerList = spy(playerList);
+        when(spyPlayerList.getCurrentPlayer()).thenReturn(player1);
+        
+        // Create game with spied playerList
+        Game game = new Game(null, deck, inputStream);
+        // Replace Game's playerList
+        Field playersField = Game.class.getDeclaredField("players");
+        playersField.setAccessible(true);
+        playersField.set(game, spyPlayerList);
+
+        Field gameDeckField = Game.class.getDeclaredField("deck");
+        gameDeckField.setAccessible(true);
+        gameDeckField.set(game, deck);
+        
+        // Replace GameContext's playerList
+        Field contextField = Game.class.getDeclaredField("context");
+        contextField.setAccessible(true);
+        GameContext context = (GameContext) contextField.get(game);
+        
+        Field contextPlayersField = GameContext.class.getDeclaredField("players");
+        contextPlayersField.setAccessible(true);
+        contextPlayersField.set(context, spyPlayerList);
+
+        Game spyGame = spy(game);
+        // Skip setupNewGame to preserve hands
+        doNothing().when(spyGame).setupNewGame();
+        doReturn(0).when(spyGame).getCardIdx(player1);
+        
+        // Execute
+        spyGame.startRound();
+
+        // Verify
+        assertEquals(0, spyGame.getRound()); // Round counter should not increment
+        assertEquals(4, player1.getTokens(), "Player 1 should have won token from Bishop guess");
+        List<Player> winners = spyPlayerList.getGameWinner();
+        assertEquals(1, winners.size());
+        assertEquals(player1, winners.get(0));
+    }
+
+    @Test
+    public void testTieBreakingRoundCalled() {
+        // Setup
+        PlayerList playerList = new PlayerList();
+        Player player1 = new Player("Alice", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+        playerList.addPlayer(player1);
+        playerList.addPlayer(player2);
+        PlayerList spyPlayerList = spy(playerList);
+        Deck mockDeck = mock(Deck.class);
+        InputStream mockInput = new ByteArrayInputStream("".getBytes());
+        
+        // Create game with spied instance to verify method calls
+        Game gameSpy = spy(new Game(null, mockDeck, mockInput));
+        
+        // Use reflection to set the players field
+        try {
+            Field playersField = Game.class.getDeclaredField("players");
+            playersField.setAccessible(true);
+            playersField.set(gameSpy, spyPlayerList);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail("Failed to set players field using reflection: " + e.getMessage());
+        }
+        
+        // Setup mock behaviors
+        List<Player> tiedWinners = Arrays.asList(player1, player2);
+        List<Player> finalWinner = Arrays.asList(player1);
+        
+        when(spyPlayerList.getGameWinner()).thenReturn(tiedWinners);  // Second call after while loop
+        
+        doReturn(finalWinner).when(gameSpy).startRoundForTiedWinners(tiedWinners);
+        
+        // Execute
+        gameSpy.start();
+        
+        // Verify
+        verify(gameSpy, times(1)).startRoundForTiedWinners(tiedWinners);
+        verify(gameSpy, times(1)).announceGameWinner(finalWinner);
+    }
+
+    @Test
+    public void testAnnounceGameWinnerSingleWinner() {
+        // Arrange
+        Game game = new Game(new PlayerList(), new Deck(), new ByteArrayInputStream(new byte[0]));
+        List<Player> winners = new ArrayList<>();
+        winners.add(new Player("Alice", new Hand(), new DiscardPile(), false, 0));
+        
+        // Act & Assert
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+        
+        game.announceGameWinner(winners);
+        
+        assertEquals("Alice has won the game and the heart of the princess!\n", outContent.toString());
+    }
+
+    @Test
+    public void testAnnounceGameWinnerNoWinners() {
+        // Arrange
+        Game game = new Game(new PlayerList(), new Deck(), new ByteArrayInputStream(new byte[0]));
+        List<Player> winners = new ArrayList<>();
+        
+        // Assert
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> game.announceGameWinner(winners)
+        );
+        assertEquals("There is no winner in the game", exception.getMessage());
+    }
+
+    @Test
+    public void testAnnounceGameWinnerMultipleWinners() {
+        // Arrange
+        Game game = new Game(new PlayerList(), new Deck(), new ByteArrayInputStream(new byte[0]));
+        List<Player> winners = new ArrayList<>();
+        winners.add(new Player("Alice", new Hand(), new DiscardPile(), false, 0));
+        winners.add(new Player("Bob", new Hand(), new DiscardPile(), false, 0));
+        
+        // Assert
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> game.announceGameWinner(winners)
+        );
+        assertEquals("There are multiple winners in the game", exception.getMessage());
+    }
+
+    @Test
+    void testStartRoundForTiedWinnersNoSecondTie() {
+        Player winner1 = new Player("winner1", new Hand(), new DiscardPile(), false, 7);
+        Player winner2 = new Player("winner2", new Hand(), new DiscardPile(), false, 7);
+        List<Player> winners = List.of(winner1, winner2);
+        Game firstGame = new Game(mock(PlayerList.class), mock(Deck.class), new ByteArrayInputStream(new byte[0]));
+
+        try(MockedConstruction<Game> mockedConstruction = mockConstruction(Game.class, (mock, context) -> {
+            doNothing().when(mock).startRound();
+            doReturn(List.of(winner2)).when(mock).getLastRoundWinners();
+        })) {
+            List<Player> finalWinners = firstGame.startRoundForTiedWinners(winners);
+
+            assertEquals(1, finalWinners.size());
+            assertEquals(winner2, finalWinners.get(0));
+        }
+    }
+
+    @Test
+    void testStartRoundForTiedWinnersStartThirdGameForSecondTieGame() {
+        Player winner1 = new Player("winner1", new Hand(), new DiscardPile(), false, 7);
+        Player winner2 = new Player("winner2", new Hand(), new DiscardPile(), false, 7);
+        List<Player> winners = List.of(winner1, winner2);
+        Game firstGame = new Game(mock(PlayerList.class), mock(Deck.class), new ByteArrayInputStream(new byte[0]));
+        try(MockedConstruction<Game> mockedSecondGameConstruction = mockConstruction(Game.class, (mockSecondGame, contextSecondGame) -> {
+            doNothing().when(mockSecondGame).startRound();
+            doReturn(winners).when(mockSecondGame).getLastRoundWinners();
+
+            try(MockedConstruction<Game> mockedThirdGameConstruction = mockConstruction(Game.class, (mockThirdGame, contextThirdGame) -> {
+                doNothing().when(mockThirdGame).startRound();
+                doReturn(List.of(winner1)).when(mockThirdGame).getLastRoundWinners();
+            })) {
+                List<Player> finalWinners = firstGame.startRoundForTiedWinners(winners);
+                
+                assertEquals(1, finalWinners.size());
+                assertEquals(winner1, finalWinners.get(0));
+            }
+        })) {
+        }
+    }
 }

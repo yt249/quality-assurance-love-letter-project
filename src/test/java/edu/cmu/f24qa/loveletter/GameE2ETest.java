@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.Stack;
+import java.util.List;
 import java.util.Scanner;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.Test;
@@ -342,7 +343,7 @@ public class GameE2ETest {
         }
 
         @Override
-        public void build() {
+        public void build16Cards() {
             Stack<Card> deck = new Stack<>();
             for (int i = this.deckCards.length - 1; i >= 0; i--) {
                 deck.push(this.deckCards[i]);
@@ -406,9 +407,9 @@ public class GameE2ETest {
         spyGame.start();
 
         String winnerName = "David";
-        Player winner = players.getGameWinner();
-
-        assertEquals(winnerName, winner.getName());
+        List<Player> winners = players.getGameWinner();
+        assertEquals(1, winners.size());
+        assertEquals(winnerName, winners.get(0).getName());
     }
 
     private PlayerList createPlayers(String[] playerNames) {

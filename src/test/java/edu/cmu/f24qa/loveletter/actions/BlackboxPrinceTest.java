@@ -21,6 +21,7 @@ import edu.cmu.f24qa.loveletter.*;
 public class BlackboxPrinceTest {
 
     private GameContext context;
+    private PlayerList playerList;
     private Player player;
     private Player opponent;
     private Deck deck;
@@ -32,32 +33,33 @@ public class BlackboxPrinceTest {
      */
     @BeforeEach
     void setup() {
-        // Simulated input for selecting an opponent
-        String simulatedInput = "Opponent\n";
-        InputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes(StandardCharsets.UTF_8));
 
         // Initialize deck
         deck = new Deck();
-        deck.build();
+        deck.build16Cards();
         deck.shuffle();
 
         // Initialize players
-        Hand playerHand = new Hand();
-        playerHand.add(Card.PRINCE);
-        player = new Player("Player1", playerHand, new DiscardPile(), false, 0);
+        player = new Player("Player1", new Hand(), new DiscardPile(), false, 0);
+        player.addCard(Card.PRINCE);
 
-        Hand opponentHand = new Hand();
-        opponentHand.add(Card.PRINCESS);
-        opponent = new Player("Opponent", opponentHand, new DiscardPile(), false, 0);
+        opponent = new Player("Opponent", new Hand(), new DiscardPile(), false, 0);
 
         // Initialize PlayerList with both players
-        PlayerList playerList = new PlayerList();
+        playerList = new PlayerList();
         playerList.addPlayer(player);
         playerList.addPlayer(opponent);
 
-        // Initialize context with simulated input
-        context = new GameContext(playerList, deck, new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         action = new PrinceAction();
+    }
+
+    /*
+     * Initialize context with simulated input
+     *
+     */
+    private void setupContext(String simulatedInput) {
+        InputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes(StandardCharsets.UTF_8));
+        context = new GameContext(playerList, deck, new InputStreamReader(inputStream, StandardCharsets.UTF_8));
     }
 
     /**
@@ -66,6 +68,12 @@ public class BlackboxPrinceTest {
      */
     @Test
     void testPrinceActionTargetPlayerEliminated() {
+        // Simulated input for selecting an opponent
+        String simulatedInput = "Opponent\n";
+        setupContext(simulatedInput);
+
+        // opponent holds princess
+        opponent.addCard(Card.PRINCESS);
         // Set the current user
         context.setCurrentUser(player);
 
@@ -82,9 +90,11 @@ public class BlackboxPrinceTest {
      */
     @Test
     void testPrinceActionDiscardAndDraw() {
-        // Modify the opponent's hand
-        opponent.getHand().clear();
-        opponent.getHand().add(Card.GUARD);
+        // Simulated input for selecting an opponent
+        String simulatedInput = "Opponent\n";
+        setupContext(simulatedInput);
+        // opponnet holds non-princess card 
+        opponent.addCard(Card.GUARD);
 
         // Set the current user
         context.setCurrentUser(player);
@@ -99,12 +109,16 @@ public class BlackboxPrinceTest {
 
     /**
      * Tests the behavior of the Prince card when the opponent is protected.
-     * Verifies that no card is discarded or drawn, and the opponent retains
+     * Verifies that player should discard its hand and draw a card, and the opponent retains
      * their original card and remains in the game.
      */
     @Test
     public void testPrinceActionOpponentIsProtected() {
+        // player is forced to select itself because all other players are protected 
+        String simulatedInput = "Player1";
+        setupContext(simulatedInput);
         // Enable protection for the opponent
+        opponent.addCard(Card.PRINCESS);
         opponent.switchProtection();
 
         // Set the current user
@@ -116,8 +130,12 @@ public class BlackboxPrinceTest {
         // Assert that the opponent is protected
         assertTrue(opponent.getIsProtected(), "Opponent should remain protected.");
 
-        // Assert that no card is discarded or drawn
+        // Assert that opponent does not discard hand or draw a new card
         assertEquals(Card.PRINCESS, opponent.getHand().peek(0), "Opponent should still have their original card.");
         assertFalse(opponent.isEliminated(), "Opponent should not be eliminated.");
+
+        // assert that player discards its card and draws a new card
+        assertEquals(Card.PRINCE, player.getDiscarded().getCards().get(0));
+        assertEquals(1, player.getHand().getHand().size());
     }
 }

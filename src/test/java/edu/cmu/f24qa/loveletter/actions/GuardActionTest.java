@@ -47,8 +47,7 @@ public class GuardActionTest {
         guardAction.execute(gameContextSpy);
 
         // Check
-        verify(gameContextSpy, times(1)).selectOpponent();
-        assertTrue(gameContextSpy.selectOpponent().isPresent());
+        verify(gameContextSpy, times(1)).selectOpponents(1, 1, false);
         assertTrue(outContent.toString().contains("Who would you like to target: "));
     }
     

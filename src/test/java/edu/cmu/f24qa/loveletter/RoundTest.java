@@ -112,7 +112,7 @@ public class RoundTest {
         }
 
         @Override
-        public void build() {
+        public void build16Cards() {
             Stack<Card> deck = new Stack<>();
             for (int i = this.deckCards.length - 1; i >= 0; i--) {
                 deck.push(this.deckCards[i]);
@@ -145,7 +145,7 @@ public class RoundTest {
         ByteArrayInputStream inputStream = createInputStream(scenario.inputs);
 
         // Create and run game
-        Game game = new Game(players, null, inputStream);
+        Game game = new Game(players, mockDeck, inputStream);
         // Set deck field with mock using Reflection
         Field deckField = Game.class.getDeclaredField("deck");
         deckField.setAccessible(true);

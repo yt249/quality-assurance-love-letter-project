@@ -11,7 +11,7 @@ import edu.cmu.f24qa.loveletter.Player;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.Optional;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -41,10 +41,10 @@ public class PriestActionTest {
         when(opponent.getName()).thenReturn("opponent");
         when(opponent.getHand()).thenReturn(opponentHand);
         when(mockGameContext.getCurrentUser()).thenReturn(currentUser);
-        when(mockGameContext.selectOpponent()).thenReturn(Optional.of(opponent));
+        when(mockGameContext.selectOpponents(1, 1, false)).thenReturn(List.of(opponent));
 
         priestAction.execute(mockGameContext);
 
-        assertEquals(outputStream.toString(), "opponent shows you a Baron (3)\n");
+        assertEquals("opponent shows you a Baron (3)\n", outputStream.toString());
     }
 }

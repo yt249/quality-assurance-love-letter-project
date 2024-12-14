@@ -7,7 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
@@ -77,7 +78,7 @@ public class WhiteboxKingTest {
 
         // Mock context behavior
         doReturn("1").when(context).readLine(); // User selects the King card (index 1)
-        doReturn(Optional.of(opponent)).when(context).selectOpponent();
+        doReturn(List.of(opponent)).when(context).selectOpponents(1, 1, false);
 
         // Call playTurnCard
         game.playTurnCard(player);
@@ -106,7 +107,7 @@ public class WhiteboxKingTest {
         action.execute(context);
 
         // Verify no opponent selection was attempted
-        verify(context, never()).selectOpponent();
+        verify(context, never()).selectOpponents(1, 1, false);
 
         // Verify error message output
         assertEquals("No current user found", systemout.toString().trim());
@@ -120,7 +121,7 @@ public class WhiteboxKingTest {
     void testKingActionNoOpponentSelected() {
         // Mock context behavior
         doReturn(player).when(context).getCurrentUser();
-        doReturn(Optional.empty()).when(context).selectOpponent(); // No opponent selected
+        doReturn(new ArrayList<>()).when(context).selectOpponents(1, 1, false); // No opponent selected
 
         KingAction action = new KingAction();
         action.execute(context);

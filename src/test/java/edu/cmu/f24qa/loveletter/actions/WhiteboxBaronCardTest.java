@@ -3,6 +3,7 @@ package edu.cmu.f24qa.loveletter.actions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
@@ -53,7 +54,7 @@ public class WhiteboxBaronCardTest {
 
         baronAction.execute(context);
 
-        verify(context, never()).selectOpponent();
+        verify(context, never()).selectOpponents(1, 1, false);
     }
     
     /*
@@ -101,78 +102,25 @@ public class WhiteboxBaronCardTest {
     }
 
     /*
-     * Test if player's hand == opponent's hand and player's discard pile total > opponent's discard pile total,
-     * opponent should be eliminated.
+     * Test if player's hand == opponent's hand, no one is eliminated.
      */
     @Test
-    void testPlayerDiscardPileGreaterThanOpponentDiscardPile() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        // Set up user's hand with Guard (index 0) and Baron (index 1)
-        spyUser.addCard(Card.GUARD);
+    void testPlayerHandEqualsToOpponentHand() {
+        // Set up user's hand with Baron (index 0) and Guard (index 1)
         spyUser.addCard(Card.BARON);
-        
-        // Set up user's discard pile with Prince and Handmaiden
-        spyUser.addCardToDiscarded(Card.PRINCE); // value 5
-        spyUser.addCardToDiscarded(Card.HANDMAIDEN); // value 4
+        spyUser.addCard(Card.GUARD);
 
         // Set up opponent's hand with Guard
         spyOpponent.addCard(Card.GUARD); 
-
-        // Set up opponent's discard pile with Guard and Countess
-        spyOpponent.addCardToDiscarded(Card.COUNTESS); // value 7
-        spyOpponent.addCardToDiscarded(Card.GUARD); // value 1
-
-        GameContext mockContext = mock(GameContext.class);
-        Field contextField = Game.class.getDeclaredField("context");
-        contextField.setAccessible(true);
-        contextField.set(game, mockContext);
-        // Stub getCurrentUser() to return mockUser
-        when(mockContext.getCurrentUser()).thenReturn(spyUser);
-
-        // user plays Baron
-        doReturn(1).when(spyGame).getCardIdx(spyUser);
-        spyGame.playTurnCard(spyUser);
-
-        // user should not be eliminated
-        verify(spyUser, never()).eliminate();
-        // opponent eliminated
-        verify(spyOpponent, times(1)).eliminate();
-    }
-
-    /*
-     * Test if player's hand == opponent's hand and player's discard pile total < opponent's discard pile total,
-     * player should be eliminated.
-     */
-    @Test
-    void testPlayerDiscardPileLessThanOpponentDiscardPile() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        // Set up user's hand with Guard (index 0) and Baron (index 1)
-        spyUser.addCard(Card.GUARD);
-        spyUser.addCard(Card.BARON);
-
-        // Set up user's discard pile with Guard and Guard
-        spyUser.addCardToDiscarded(Card.GUARD); // value 1
-        spyUser.addCardToDiscarded(Card.GUARD); // value 1
-
-        // Set up opponent's hand with Guard
-        spyOpponent.addCard(Card.GUARD);
-
-        // Setup opponent's discard pile with Prince and Handmaiden
-        spyOpponent.addCardToDiscarded(Card.PRINCE); // value 5
-        spyOpponent.addCardToDiscarded(Card.HANDMAIDEN); // value 4
-
-        GameContext mockContext = mock(GameContext.class);
-        Field contextField = Game.class.getDeclaredField("context");
-        contextField.setAccessible(true);
-        contextField.set(game, mockContext);
-        // Stub getCurrentUser() to return mockUser
-        when(mockContext.getCurrentUser()).thenReturn(spyUser);
         
         // user plays Baron
-        doReturn(1).when(spyGame).getCardIdx(spyUser);
+        doReturn(0).when(spyGame).getCardIdx(spyUser);
         spyGame.playTurnCard(spyUser);
 
         // user eliminated
-        verify(spyUser, times(1)).eliminate();
+        assertFalse(spyUser.isEliminated());
         // opponent should not be eliminated
-        verify(spyOpponent, never()).eliminate();
+        assertFalse(spyOpponent.isEliminated());
     }
 }
+

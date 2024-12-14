@@ -1,5 +1,6 @@
 package edu.cmu.f24qa.loveletter.actions;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -114,91 +115,24 @@ public class BlackboxBaronCardTest {
     }
 
     /*
-     * Test if player's hand == opponent's hand and player's discard pile total > opponent's discard pile total,
-     * opponent should be eliminated.
+     * Test if player's hand == opponent's hand, no one is eliminated.
      */
     @Test
-    void testPlayerDiscardPileGreaterThanOpponentDiscardPile() {
-        // Set up user's hand with Guard (index 0) and Baron (index 1)
-        spyUser.addCard(Card.GUARD);
+    void testPlayerHandEqualsToOpponentHand() {
+        // Set up user's hand with Baron (index 0) and Guard (index 1)
         spyUser.addCard(Card.BARON);
-        
-        // Set up user's discard pile with Prince and Handmaiden
-        spyUser.addCardToDiscarded(Card.PRINCE); // value 5
-        spyUser.addCardToDiscarded(Card.HANDMAIDEN); // value 4
-
-        // Set up opponent's hand with Guard (index 0)
-        spyOpponent.addCard(Card.GUARD);
-
-        // Set up opponent's discard pile with Guard and Countess
-        spyOpponent.addCardToDiscarded(Card.COUNTESS); // value 7
-        spyOpponent.addCardToDiscarded(Card.GUARD); // value 1
-
-        // user plays Baron
-        doReturn(1).when(spyGame).getCardIdx(spyUser);
-        spyGame.playTurnCard(spyUser);
-
-        // should not eliminate user
-        verify(spyUser, never()).eliminate();
-        // should eliminate opponent
-        verify(spyOpponent, times(1)).eliminate();
-    }
-
-    /*
-     * Test if player's hand == opponent's hand and player's discard pile total < opponent's discard pile total,
-     * player should be eliminated.
-     */
-    @Test
-    void testPlayerDiscardPileLessThanOpponentDiscardPile() {
-        // Set up user's hand with Guard (index 0) and Baron (index 1)
         spyUser.addCard(Card.GUARD);
-        spyUser.addCard(Card.BARON);
-
-        // Set up user's discard pile with Guard
-        spyUser.addCardToDiscarded(Card.GUARD);
-
-        // Set up opponent's hand with Guard (index 0)
-        spyOpponent.addCard(Card.GUARD);
-
-        // Set up opponent's discard pile with Prince
-        spyOpponent.addCardToDiscarded(Card.PRINCE);
-
-        // user plays Baron
-        doReturn(1).when(spyGame).getCardIdx(spyUser);
-        spyGame.playTurnCard(spyUser);
-
-        // should eliminate user
-        verify(spyUser, times(1)).eliminate();
-        // should not eliminate opponent
-        verify(spyOpponent, never()).eliminate();
-    }
-
-    /*
-     * Test if player's hand == opponent's hand and player's discard pile total == opponent's discard pile total,
-     * nothing should happen (nobody is eliminated).
-     */
-    @Test
-    void testPlayerDiscardPileEqualsToOpponentDiscardPile() {
-        // Set up user's hand with Guard (index 0) and Baron (index 1)
-        spyUser.addCard(Card.GUARD);
-        spyUser.addCard(Card.BARON);
-
-        // Set up user's discard pile with Guard
-        spyUser.addCardToDiscarded(Card.GUARD); // value 1
 
         // Set up opponent's hand with Guard
         spyOpponent.addCard(Card.GUARD);
 
-        // Set up opponent's discard pile with Handmaiden
-        spyOpponent.addCardToDiscarded(Card.HANDMAIDEN);  // value 4
-        
         // user plays Baron
-        doReturn(1).when(spyGame).getCardIdx(spyUser);
+        doReturn(0).when(spyGame).getCardIdx(spyUser);
         spyGame.playTurnCard(spyUser);
 
-        // should eliminate user
-        verify(spyUser, never()).eliminate();
+        // should not eliminate user
+        assertFalse(spyUser.isEliminated());
         // should not eliminate opponent
-        verify(spyOpponent, never()).eliminate();
+        assertFalse(spyOpponent.isEliminated());
     }
 }

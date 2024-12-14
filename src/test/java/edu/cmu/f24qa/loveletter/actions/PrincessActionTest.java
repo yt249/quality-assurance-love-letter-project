@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
@@ -34,7 +37,7 @@ public class PrincessActionTest {
     @Test
     public void testPrincessActionDoesNotAllowOpponentSelection() {
         princessAction.execute(context);
-        verify(context, never()).selectOpponent();
+        verify(context, never()).selectOpponents(anyInt(), anyInt(), anyBoolean());
     }
 
     @Test

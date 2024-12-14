@@ -1,0 +1,51 @@
+<FindBugsFilter>
+  <!-- Include specific rules -->
+  <Match>
+    <!-- May expose internal representation by returning reference to mutable object-->
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+  <!-- Flags fields that are declared but never read, indicating unused code. -->
+  <Match>
+    <Bug pattern="URF_UNREAD_FIELD"/>
+  </Match>
+  <!-- Warns when a method modifies an argument but doesn't re-throw it. -->
+  <Match>
+    <Bug pattern="DMI_ARGUMENT_MODIFIED_BUT_NOT_RETHROWN"/>
+  </Match>
+  <!-- Detects explicit throwing of NullPointerException, a bad practice. -->
+  <Match>
+    <Bug pattern="NP_THROW_NULL_POINTER_EXCEPTION"/>
+  </Match>
+  <!-- Flags general exception handling that may hide specific issues. -->
+  <Match>
+    <Bug pattern="EXCEPTION_USAGE"/>
+  </Match>
+  <!-- Warns if an exception is caught but not propagated, losing context. -->
+  <Match>
+    <Bug pattern="DE_MIGHT_DROP"/>
+  </Match>
+  <!-- Detects potential null pointer dereferences on some code paths. -->
+  <Match>
+    <Bug pattern="NP_NULL_ON_SOME_PATH"/>
+  </Match>
+  <!-- Checks if equals() properly handles null arguments to avoid NullPointerExceptions. -->
+  <Match>
+    <Bug pattern="NP_EQUALS_NULL" />
+  </Match>
+  <!-- Flags explicit null assignments that may cause NullPointerExceptions later. -->
+  <Match>
+    <Bug pattern="NP_STORE_NULL" />
+  </Match>
+  <!-- Detects improper clone() implementations that violate the Cloneable contract. -->
+  <Match>
+    <Bug pattern="CN_IDIOM" />
+  </Match>
+  <!-- Warns when methods return null instead of an empty collection. -->
+  <Match>
+    <Bug pattern="MS_SHOULD_BE_FINAL" />
+  </Match>
+  <!-- Flags equals() methods with incorrect names or signatures. -->
+  <Match>
+    <Bug pattern="NM_SUSPICIOUS_EQUALS" />
+  </Match>
+</FindBugsFilter>

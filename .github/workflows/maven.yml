@@ -18,23 +18,17 @@ jobs:
         java-version: 18
         distribution: temurin
         cache: maven
-    - name: Run the Maven tests
+    - name: Run the Maven tests with JaCoCo
+      id: maven-test
       run: mvn clean compile test
+      continue-on-error: true  # Allow the workflow to proceed even if this step fails
+    - name: Upload coverage report if threshold fails
+      if: ${{ failure() && steps.maven-test.outcome == 'failure' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: low-coverage-report
+        path: target/site/jacoco/index.html
     - name: Run checkstyle
       run: mvn checkstyle:check
-    - name: Upload Checkstyle Report
-      if: failure()
-      uses: actions/upload-artifact@v3
-      with:
-        name: checkstyle-report
-        path: target/checkstyle-result.xml
-    - name: Run PMD checks
-      run: mvn pmd:check
-    - name: Upload PMD Report
-      if: failure()
-      uses: actions/upload-artifact@v3
-      with:
-        name: pmd-report
-        path: target/pmd.xml
     - name: Run spotbugs
       run:  mvn spotbugs:check

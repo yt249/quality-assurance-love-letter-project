@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class PlayerListTest {
@@ -21,10 +23,11 @@ public class PlayerListTest {
         players.addPlayer(winner);
         players.addPlayer(loser);
 
-        Player result = players.getGameWinner();
+        List<Player> result = players.getGameWinner();
 
         assertEquals(players.getPlayers().size(), 2);
-        assertEquals(result.getName(), "winner");
+        assertEquals(1, result.size());
+        assertEquals(result.get(0).getName(), "winner");
     }
 
     /*
@@ -41,10 +44,11 @@ public class PlayerListTest {
         players.addPlayer(loser1);
         players.addPlayer(loser2);
 
-        Player result = players.getGameWinner();
+        List<Player> result = players.getGameWinner();
 
         assertEquals(players.getPlayers().size(), 3);
-        assertEquals(result.getName(), "winner");
+        assertEquals(1, result.size());
+        assertEquals(result.get(0).getName(), "winner");
     }
 
     /*
@@ -63,14 +67,15 @@ public class PlayerListTest {
         players.addPlayer(loser2);
         players.addPlayer(loser3);
 
-        Player result = players.getGameWinner();
+        List<Player> result = players.getGameWinner();
 
         assertEquals(players.getPlayers().size(), 4);
-        assertEquals(result.getName(), "winner");
+        assertEquals(1, result.size());
+        assertEquals(result.get(0).getName(), "winner");
     }
 
     /*
-     * Verify that getGameWinner should throw exception when there are not 2-4 players.
+     * Verify that getGameWinner should throw exception when there are not 2-8 players.
      */
     @Test
     void testGetGameWinnerForInvalidNumberOfPlayers() {
@@ -140,5 +145,116 @@ public class PlayerListTest {
         );
 
         assertEquals("No players have cards.", exception.getMessage());
+    }
+
+    @Test
+    void testCompareHandBishopLosesToPrincess() {
+        // Setup
+        PlayerList playerList = new PlayerList();
+
+        // Create players with Bishop and Princess
+        Player player1 = new Player("Alice", new Hand(), new DiscardPile(), false, 0);
+        Player player2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+
+        // Add Bishop (value 9) to player1's hand
+        player1.addCard(Card.BISHOP);
+
+        // Add Princess (value 8) to player2's hand
+        player2.addCard(Card.PRINCESS);
+
+        // Add players to the list
+        playerList.addPlayer(player1);
+        playerList.addPlayer(player2);
+
+        // Execute
+        List<Player> winners = playerList.compareHand();
+
+        // Verify
+        assertEquals(1, winners.size(), "Should be exactly one winner");
+        assertEquals(player2, winners.get(0), "Player with Princess should win over player with Bishop");
+    }
+    
+    @Test
+    public void testCompareHandEmptyList() {
+        PlayerList playerList = new PlayerList();
+        Exception exception = assertThrows(IllegalStateException.class, () -> playerList.compareHand());
+        assertEquals("Player list is empty", exception.getMessage());
+    }
+    
+    @Test
+    public void testCompareHandSingleWinner() {
+        // Create players with different hand values
+        Player p1 = new Player("Alice", new Hand(), new DiscardPile(), false, 0);
+        Player p2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+        
+        // Give players different cards
+        p1.addCard(Card.PRINCESS); // Value 8
+        p2.addCard(Card.GUARD);    // Value 1
+        
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer(p1);
+        playerList.addPlayer(p2);
+        
+        List<Player> winners = playerList.compareHand();
+        assertEquals(1, winners.size());
+        assertEquals("Alice", winners.get(0).getName());
+    }
+    
+    @Test
+    public void testCompareHandWithCountBonus() {
+        Player p1 = new Player("Alice", new Hand(), new DiscardPile(), false, 0);
+        Player p2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+        
+        // Give players cards
+        p1.addCard(Card.BARON);    // Value 3
+        p2.addCard(Card.PRIEST);   // Value 2
+        
+        // Add Count cards to p2's discard pile
+        p2.addCardToDiscarded(Card.COUNT);  // +1 bonus
+        p2.addCardToDiscarded(Card.COUNT);  // +1 bonus
+        
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer(p1);
+        playerList.addPlayer(p2);
+        
+        List<Player> winners = playerList.compareHand();
+        assertEquals(1, winners.size());
+        assertEquals("Bob", winners.get(0).getName()); // Should win with 2 + 2 = 4
+    }
+    
+    @Test
+    public void testCompareHandTie() {
+        Player p1 = new Player("Alice", new Hand(), new DiscardPile(), false, 0);
+        Player p2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+        
+        // Give both players the same card
+        p1.addCard(Card.KING);     // Value 6
+        p2.addCard(Card.KING);     // Value 6
+        
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer(p1);
+        playerList.addPlayer(p2);
+        
+        List<Player> winners = playerList.compareHand();
+        assertEquals(2, winners.size());
+        assertTrue(winners.contains(p1));
+        assertTrue(winners.contains(p2));
+    }
+
+    @Test
+    public void testCompareHandIgnoresEliminatedPlayers() {
+        Player p1 = new Player("Alice", new Hand(), new DiscardPile(), false, 0);
+        Player p2 = new Player("Bob", new Hand(), new DiscardPile(), false, 0);
+        
+        // Only give one player a card
+        p1.addCard(Card.HANDMAIDEN); // Value 4
+        
+        PlayerList playerList = new PlayerList();
+        playerList.addPlayer(p1);
+        playerList.addPlayer(p2);
+        
+        List<Player> winners = playerList.compareHand();
+        assertEquals(1, winners.size());
+        assertEquals("Alice", winners.get(0).getName());
     }
 }

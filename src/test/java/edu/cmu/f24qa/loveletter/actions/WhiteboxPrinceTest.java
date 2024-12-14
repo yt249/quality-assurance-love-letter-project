@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.Optional;
+import java.util.List;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
@@ -48,15 +48,18 @@ public class WhiteboxPrinceTest {
         opponentHand.add(Card.PRINCESS);
 
         // Initialize players
+        PlayerList players = new PlayerList();
         player = new Player("Player1", playerHand, new DiscardPile(), false, 0);
         opponent = spy(new Player("Opponent", opponentHand, new DiscardPile(), false, 0));
+        players.addPlayer(player);
+        players.addPlayer(opponent);
 
         // Initialize deck
         deck = spy(new Deck());
-        deck.build();
+        deck.build16Cards();
 
         InputStream dummyInputStream = new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8));
-        context = spy(new GameContext(null, deck, new InputStreamReader(dummyInputStream)));
+        context = spy(new GameContext(players, deck, new InputStreamReader(dummyInputStream)));
     }
 
     /**
@@ -66,10 +69,9 @@ public class WhiteboxPrinceTest {
     @Test
     void testPlayTurnCardPlayPrinceCardEliminatePrincess() throws Exception {
         // Modify the player's hand for this test
-        Hand hand = new Hand();
-        hand.add(Card.KING);
-        hand.add(Card.PRINCE);
-        player = new Player("Player1", hand, new DiscardPile(), false, 0);
+        player.getHand().clear();
+        player.addCard(Card.KING);
+        player.addCard(Card.PRINCE);
 
         // Create a Game instance
         InputStream inputStream = new ByteArrayInputStream("dummy".getBytes(StandardCharsets.UTF_8));
@@ -82,7 +84,7 @@ public class WhiteboxPrinceTest {
 
         // Mock context behavior
         doReturn("1").when(context).readLine(); // User selects the second card (PRINCE)
-        doReturn(Optional.of(opponent)).when(context).selectOpponent();
+        doReturn(List.of(opponent)).when(context).selectOpponents(1, 1, true);
 
         // Call playTurnCard
         game.playTurnCard(player);
@@ -113,7 +115,7 @@ public class WhiteboxPrinceTest {
         action.execute(context);
 
         // Verify that no opponent selection was attempted
-        verify(context, never()).selectOpponent();
+        verify(context, never()).selectOpponents(anyInt(), anyInt(), anyBoolean());
 
         // Verify that the correct message is printed
         assertEquals("No current user found", systemout.toString().trim());
@@ -132,7 +134,7 @@ public class WhiteboxPrinceTest {
         // Mock new card draw
         Card newCard = context.getDeck().draw();
         doReturn(player).when(context).getCurrentUser();
-        doReturn(Optional.of(opponent)).when(context).selectOpponent();
+        doReturn(List.of(opponent)).when(context).selectOpponents(1, 1, true);
         doReturn(newCard).when(deck).draw();
 
         PrinceAction action = new PrinceAction();

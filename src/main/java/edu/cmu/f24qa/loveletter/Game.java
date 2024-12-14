@@ -94,11 +94,15 @@ public class Game {
      * The main game loop.
      */
     public void start() {
-        while (players.getGameWinner() == null) {
+        while (players.getGameWinner().size() == 0) {
             startRound();
         }
-        announceGameWinner();
-
+        List<Player> winners = players.getGameWinner();
+        // if there are multiple winners, all tied players should play another round to break the tie
+        if (winners.size() > 1) {
+            winners = startRoundForTiedWinners(winners);
+        }
+        announceGameWinner(winners);
     }
 
     public void startRound() {
@@ -109,15 +113,38 @@ public class Game {
         while (!players.checkForRoundWinner() && deck.hasMoreCards()) {
             Player turn = players.getCurrentPlayer();
             executeTurn(turn);
+            // check if someone won the game after the turn
+            if (players.getGameWinner().size() > 0) {
+                return;
+            }
         }
         determineRoundWinner();
         round += 1;
     }
 
+    /*
+     * If there are multiple winners, start a new round for the tied winners
+     * 
+     * @return the winners of the new round (only 1 winner)
+     */
+    public List<Player> startRoundForTiedWinners(List<Player> winnerList) {
+        System.out.println("Tie! Starting a new round for the tied winners:");
+        PlayerList winners = new PlayerList();
+        for (Player winner : winnerList) {
+            winners.addPlayer(winner);
+        }
+
+        Game breakTieGame = new Game(winners, new Deck(), System.in);
+        breakTieGame.startRound();
+        List<Player> roundWinners = breakTieGame.getLastRoundWinners();
+        if (roundWinners.size() != 1) {
+            return startRoundForTiedWinners(roundWinners);
+        }
+        return roundWinners;
+    }
+
     public void setupNewGame() {
-        players.reset();
-        initializeDeck();
-        removeCardFromDeck();
+        context.reset();
         players.dealCards(deck);
     }
 
@@ -169,7 +196,7 @@ public class Game {
             return -1;
         }
         int otherCardPos = (royaltyPos == 0) ? 1 : 0;
-        return turn.getHand().peek(otherCardPos).getValue() == 7 ? otherCardPos : -1;
+        return turn.getHand().peek(otherCardPos).getName() == Card.COUNTESS.getName() ? otherCardPos : -1;
     }
 
     public void determineRoundWinner() {
@@ -204,36 +231,24 @@ public class Game {
             }
             players.print();
         }
-    }
 
-    public void announceGameWinner() {
-        Player gameWinner = players.getGameWinner();
-        System.out.println(gameWinner + " has won the game and the heart of the princess!");
-    }
-
-    public void initializeDeck() {
-        this.deck.build();
-        this.deck.shuffle();
-    }
-
-    /**
-     * In the beginning of the game: 
-     *  - remove 1 card from deck 
-     *  - remove additional 3 cards from deck face up in a 2-player game
-     */
-    public void removeCardFromDeck(){
-        int playerSize = players.getPlayers().size();
-
-        // Remove 1 card from deck
-        deck.draw();
-
-        // Remove additional 3 cards from deck face up in a 2-player game
-        if (playerSize == 2){
-            for (int i = 0; i < 3; i++) {
-                Card drawnCard = deck.draw();
-                System.out.println(drawnCard + " was removed from the deck.");
-            }
+        // Check Jester guess
+        Player guessedPlayer = context.getGuessedPlayer();
+        Player jesterPlayer = context.getJesterPlayer();
+        if (guessedPlayer != null && jesterPlayer != null && lastRoundWinners.contains(guessedPlayer)) {
+            jesterPlayer.addToken();
+            System.out.println(jesterPlayer.getName() + " guessed correctly and gains a token!");
         }
+    }
+
+    public void announceGameWinner(List<Player> winners) {
+        int winnerCount = winners.size();
+        if (winnerCount == 0) {
+            throw new IllegalStateException("There is no winner in the game");
+        } else if (winners.size() > 1) {
+            throw new IllegalStateException("There are multiple winners in the game");
+        }
+        System.out.println(winners.get(0).getName() + " has won the game and the heart of the princess!");
     }
 
     /**
@@ -250,6 +265,10 @@ public class Game {
 
         CardAction action = actionFactory.getAction(cardName);
         action.execute(context); // Execute the action with GameContext
+        // only reset the sycophant effect if the card played is not a sycophant card
+        if (!card.equals(Card.SYCOPHANT)) {
+            context.resetSycophantForcedPlayer();
+        }
     }
 
     /**

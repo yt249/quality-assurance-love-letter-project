@@ -40,9 +40,21 @@ public class Player {
     }
 
     /**
+     * Handles the constable card.
+     * If the player has a constable card in their discard pile, they get a token.
+     */
+    public void handleConstable() {
+        if (this.discarded.getCards().contains(Card.CONSTABLE)) {
+            this.addToken();
+            System.out.println("Player " + this.name + " has a constable card in their discard pile and gets a token.");
+        }
+    }
+
+    /**
      * Eliminates the player from the round by discarding their hand.
      */
     public void eliminate() {
+        this.handleConstable();
         this.clearHand();
         this.clearDiscarded();
     }
@@ -110,5 +122,18 @@ public class Player {
     @Override
     public String toString() {
         return this.name + " (" + this.tokens + " tokens)";
+    }
+
+    /**
+     * Returns the value of the card in hand plus the number of Count cards in the discard pile.
+     * 
+     * @return the effective value of the card in hand
+     */
+    public int getHandValueWithCountBonus() {
+        int handValue = this.getHand().peek(0).getValue();
+        int countBonus = (int) this.getDiscarded().getCards().stream()
+            .filter(card -> card == Card.COUNT)
+            .count();
+        return handValue + countBonus;
     }
 }

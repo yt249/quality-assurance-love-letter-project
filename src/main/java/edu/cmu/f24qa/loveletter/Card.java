@@ -1,6 +1,8 @@
 package edu.cmu.f24qa.loveletter;
 
 public enum Card {
+
+    // Card values for 2-4 players
     GUARD("Guard", 1),
     PRIEST("Priest", 2),
     BARON("Baron", 3),
@@ -8,24 +10,21 @@ public enum Card {
     PRINCE("Prince", 5),
     KING("King", 6),
     COUNTESS("Countess", 7),
-    PRINCESS("Princess", 8);
+    PRINCESS("Princess", 8),
+
+    // Card values for 5-8 players
+    JESTER("Jester", 0),
+    ASSASSIN("Assassin", 0),
+    CARDINAL("Cardinal", 2),
+    BARONESS("Baroness", 3),
+    SYCOPHANT("Sycophant", 4),
+    COUNT("Count", 5),
+    CONSTABLE("Constable", 6),
+    QUEEN("Queen", 7),
+    BISHOP("Bishop", 9);
 
     private String name;
     private int value;
-
-    /**
-     * All possible card names.
-     */
-    public static final String[] CARD_NAMES = {
-        "guard",
-        "priest",
-        "baron",
-        "handmaiden",
-        "prince",
-        "king",
-        "countess",
-        "princess"
-    };
 
     /**
      * Constructor for a card object.

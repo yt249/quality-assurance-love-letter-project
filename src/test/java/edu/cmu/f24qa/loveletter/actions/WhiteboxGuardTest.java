@@ -145,5 +145,30 @@ public class WhiteboxGuardTest {
         // Verify that the opponent was not eliminated
         assertFalse(this.opponent.isEliminated());
         assertTrue(this.outContent.toString().contains("You have guessed incorrectly."));
+    } 
+
+    /**
+     * Tests the Guard card play when the opponent has the Assassin card.
+     * Expected behavior: The player should be eliminated and a message should be displayed.
+     * Tests the core functionality of the Guard card when the opponent has the Assassin card.
+     */
+    @Test
+    public void testPlayGuardOpponentHasAssassin() {
+        // Set input with any guessed card
+        setUpGameWithSimulatedInput("0\nPrince\nBob\n");
+
+        // Set up the player's hand with Guard
+        this.player.addCard(Card.GUARD);
+
+        // Set up the opponent's hand with Assassin
+        this.opponent.addCard(Card.ASSASSIN);
+
+        // Execute the turn
+        this.game.playTurnCard(this.player);
+
+        // Verify that the player is eliminated
+        assertTrue(this.player.isEliminated());
+        assertTrue(this.outContent.toString().contains("You guessed Assassin! You are eliminated."));
     }
+
 }

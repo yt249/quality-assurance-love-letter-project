@@ -120,10 +120,11 @@ public class PlayerList {
      *
      * @return the game winner
      */
-    public @Nullable Player getGameWinner() {
+    public List<Player> getGameWinner() {
+        List<Player> winners = new ArrayList<>();
         int playerCount = players.size();
         int tokensToWin;
-        if (!(playerCount >= 2 && playerCount <= 4)) {
+        if (!(playerCount >= 2 && playerCount <= 8)) {
             throw new IllegalStateException("Invalid number of players");
         }
         if (playerCount == 2) {
@@ -134,11 +135,11 @@ public class PlayerList {
             tokensToWin = 4;
         }
         for (Player p : players) {
-            if (p.getTokens() == tokensToWin) {
-                return p;
+            if (p.getTokens() >= tokensToWin) {
+                winners.add(p);
             }
         }
-        return null;
+        return winners;
     }
 
     /**
@@ -209,29 +210,49 @@ public class PlayerList {
     }
 
     /*
-     * Returns a list of players with the highest value hand card
+     * Returns a list of players with the highest value hand card, accounting for Count card effects
+     * Special case: Bishop (9) loses to Princess (8) in hand comparison.
      */
     public List<Player> compareHand() {
         if (players.isEmpty()) {
             throw new IllegalStateException("Player list is empty");
         }
         List<Player> tiedPlayers = new ArrayList<>();
-        int highestHandValue = -1;
+        int highestEffectiveValue = -1;
+        boolean hasPrincess = false;
+
+        // First pass to check if anyone has the Princess
+        for (Player player: players) {
+            if (player.getHand().hasCards() && player.getHand().peek(0) == Card.PRINCESS) {
+                hasPrincess = true;
+                break;
+            }
+        }
 
         for (Player player: players) {
-            if (player.getHand().hasCards()) {
-                int handValue = player.getHand().peek(0).getValue(); // Get the value of the card in hand
-                if (handValue > highestHandValue) {
-                    highestHandValue = handValue;
+            if (!player.isEliminated()) {
+                Card handCard = player.getHand().peek(0);
+                
+                // If someone has Princess, Bishop holders are ignored
+                if (hasPrincess && handCard == Card.BISHOP) {
+                    continue;
+                }
+
+                // Calculate effective hand value with Count bonus
+                int effectiveValue = player.getHandValueWithCountBonus();
+                
+                if (effectiveValue > highestEffectiveValue) {
+                    highestEffectiveValue = effectiveValue;
                     tiedPlayers.clear();
                     tiedPlayers.add(player);
-                } else if (handValue == highestHandValue) {
+                } else if (effectiveValue == highestEffectiveValue) {
                     tiedPlayers.add(player);
                 }
             }
         }
+        
         return tiedPlayers;
-    }
+    } 
 
     /* for testing purpose */
     public void addPlayer(Player player) {
